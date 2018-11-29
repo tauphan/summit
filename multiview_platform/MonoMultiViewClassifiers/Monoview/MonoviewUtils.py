@@ -193,6 +193,24 @@ class MonoviewResult(object):
     def get_classifier_name(self):
         return self.classifier_name+"-"+self.view_name
 
+def format_y(y):
+    if not isinstance(y, np.ndarray):
+        y = np.array(y)
+    if len(y.shape) > 1:
+        if y.shape[1] > 1:
+            raise ValueError("y msu be a 1d-array or a list of scalars")
+        else:
+            y.reshape((y.shape[0],))
+    y_set = np.unique(y)
+    if np.equal(y_set, np.array([-1,1])).all():
+        return y
+    elif y_set.shape == (2,) and np.isin(1, np.unique(y)):
+        formated_y = np.array([label if label == 1 else -1 for label in y])
+        return formated_y
+    else:
+        # TODO Multiview
+        return y
+
 
 
 # def isUseful(labelSupports, index, CLASS_LABELS, labelDict):
