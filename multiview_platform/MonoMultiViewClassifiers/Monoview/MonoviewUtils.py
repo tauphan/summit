@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 import pickle
+import scipy
+import logging
 
 from .. import Metrics
 from ..utils import HyperParameterSearch
@@ -173,13 +175,15 @@ class BaseMonoviewClassifier(object):
 def get_names(classed_list):
     return np.array([object_.__class__.__name__ for object_ in classed_list])
 
+
 def percent(x, pos):
     """Used to print percentage of importance on the y axis"""
     return '%1.1f %%' % (x * 100)
 
 
 class MonoviewResult(object):
-    def __init__(self, view_index, classifier_name, view_name, metrics_scores, full_labels_pred,
+    def __init__(self, view_index, classifier_name, view_name, metrics_scores,
+                 full_labels_pred,
                  classifier_config, y_test_multiclass_pred, test_folds_preds):
         self.view_index = view_index
         self.classifier_name = classifier_name
@@ -193,7 +197,12 @@ class MonoviewResult(object):
     def get_classifier_name(self):
         return self.classifier_name+"-"+self.view_name
 
-def format_y(y):
+
+def format_Xy(X, y):
+    if scipy.sparse.issparse(X):
+        formatted_X = np.array(X.todense())
+    else:
+        formatted_X = X
     if not isinstance(y, np.ndarray):
         y = np.array(y)
     if len(y.shape) > 1:
@@ -203,13 +212,13 @@ def format_y(y):
             y.reshape((y.shape[0],))
     y_set = np.unique(y)
     if np.equal(y_set, np.array([-1,1])).all():
-        return y
+        return y.reshape((y.shape[0],1)), formatted_X
     elif y_set.shape == (2,) and np.isin(1, np.unique(y)):
         formated_y = np.array([label if label == 1 else -1 for label in y])
-        return formated_y
+        return formated_y.reshape((formated_y.shape[0], 1)), formatted_X
     else:
         # TODO Multiview
-        return y
+        return y.reshape((y.shape[0],1)), formatted_X
 
 
 
