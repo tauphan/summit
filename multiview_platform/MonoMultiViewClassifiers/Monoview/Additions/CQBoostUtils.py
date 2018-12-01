@@ -32,7 +32,7 @@ class ColumnGenerationClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
         y[y == 0] = -1
 
         if self.estimators_generator is None:
-            self.estimators_generator = StumpsClassifiersGenerator(n_stumps_per_attribute=self.n_stumps_per_attribute, self_complemented=True)
+            self.estimators_generator = StumpsClassifiersGenerator(n_stumps_per_attribute=self.n_stumps, self_complemented=True)
 
         self.estimators_generator.fit(X, y)
         self.classification_matrix = self._binary_classification_matrix(X)
@@ -85,7 +85,7 @@ class ColumnGenerationClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
             self.bounds.append(math.exp(-2 * np.sum(np.square(np.array(self.gammas)))))
 
         self.nb_opposed_voters = self.check_opposed_voters()
-        self.compute_weights_(w)
+        self.compute_voters_weights(w)
         # self.weights_ = w
         self.estimators_generator.estimators_ = self.estimators_generator.estimators_[self.chosen_columns_]
         end = time.time()
@@ -104,7 +104,7 @@ class ColumnGenerationClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
 
         classification_matrix = self._binary_classification_matrix(X)
 
-        margins = np.squeeze(np.asarray(np.dot(classification_matrix, self.weights_)))
+        margins = np.squeeze(np.asarray(np.dot(classification_matrix, self.voters_weights)))
         signs_array = np.array([int(x) for x in sign(margins)])
         signs_array[signs_array == -1] = 0
         end = time.time()
@@ -121,8 +121,8 @@ class ColumnGenerationClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
         margins = np.squeeze(np.asarray(np.dot(self.classification_matrix[:, self.chosen_columns_], w)))
         return margins
 
-    def compute_weights_(self, w=None):
-        self.weights_ = w
+    def compute_voters_weights(self, w=None):
+        self.voters_weights = w
 
     def get_matrix_to_optimize(self, y_kernel_matrix, w=None):
         return y_kernel_matrix[:, self.chosen_columns_]

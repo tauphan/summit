@@ -38,7 +38,7 @@ class ColumnGenerationClassifierv2(ColumnGenerationClassifier):
                                                   self.final_vote_weights)))
         return margins
 
-    def compute_weights_(self, w=None):
+    def compute_voters_weights(self, w=None):
         self.weights_ = np.array(self.weights_)
         self.final_vote_weights = np.array([np.prod(1 - self.weights_[t + 1:]) * self.weights_[t] if t <
                                                                                                      self.weights_.shape[

@@ -677,6 +677,7 @@ def get_accuracy_graph(train_accuracies, classifier_name, file_name, name="Accur
         ax.set_title(name+" during train for "+classifier_name)
         x = np.arange(len(train_accuracies))
         scat = ax.scatter(x, np.array(train_accuracies), )
+        print(x.shape, np.array(bounds).shape)
         scat2 = ax.scatter(x, np.array(bounds), )
         ax.legend((scat,scat2), (name,"Bounds"))
         plt.tight_layout()
@@ -696,7 +697,7 @@ def get_accuracy_graph(train_accuracies, classifier_name, file_name, name="Accur
 class BaseBoost(object):
 
     def __init__(self):
-        self.n_stumps_per_attribute = 1
+        self.n_stumps = 1
 
     def _collect_probas(self, X):
         return np.asarray([clf.predict_proba(X) for clf in self.estimators_generator.estimators_])
@@ -750,6 +751,6 @@ def getInterpretBase(classifier, directory, classifier_name, weights,
     interpretString += np.array2string(classifier.classification_matrix[:, classifier.chosen_columns_], precision=4,
                                        separator=',', suppress_small=True)
     np.savetxt(directory + "voters.csv", classifier.classification_matrix[:, classifier.chosen_columns_], delimiter=',')
-    np.savetxt(directory + "weights.csv", classifier.weights_, delimiter=',')
+    np.savetxt(directory + "weights.csv", classifier.voters_weights, delimiter=',')
     get_accuracy_graph(classifier.train_metrics, classifier_name, directory + 'metrics.png', classifier.plotted_metric, classifier.bounds)
     return interpretString

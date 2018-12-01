@@ -58,7 +58,7 @@ class ColumnGenerationClassifierQar(BaseEstimator, ClassifierMixin, BaseBoost):
         self.random_start = random_start
         self.plotted_metric = plotted_metric
         if n_stumps_per_attribute:
-            self.n_stumps_per_attribute = n_stumps_per_attribute
+            self.n_stumps = n_stumps_per_attribute
         self.use_r = use_r
         self.printed_args_name_list = ["n_max_iterations", "self_complemented", "twice_the_same",
                                        "c_bound_choice", "random_start",
@@ -131,7 +131,7 @@ class ColumnGenerationClassifierQar(BaseEstimator, ClassifierMixin, BaseBoost):
 
     def init_hypotheses(self, X, y):
         if self.estimators_generator is None:
-            self.estimators_generator = StumpsClassifiersGenerator(n_stumps_per_attribute=self.n_stumps_per_attribute,
+            self.estimators_generator = StumpsClassifiersGenerator(n_stumps_per_attribute=self.n_stumps,
                                                                    self_complemented=self.self_complemented)
         self.get_classification_matrix(X, y)
         m, n = self.classification_matrix.shape
@@ -151,7 +151,7 @@ class ColumnGenerationClassifierQar(BaseEstimator, ClassifierMixin, BaseBoost):
             first_voter_index = self.random_state.choice(
                 self.get_possible(y_kernel_matrix, y))
         else:
-            first_voter_index, _ = self._find_best_weighted_margin(
+            first_voter_index= self._find_best_margin(
                 y_kernel_matrix)
         if type(first_voter_index) is str:
             raise ValueError("Jambon")
@@ -159,6 +159,7 @@ class ColumnGenerationClassifierQar(BaseEstimator, ClassifierMixin, BaseBoost):
         self.new_voter = self.classification_matrix[:, first_voter_index].reshape((m, 1))
         self.bounds.append(math.sqrt(1 - self._compute_r(y) ** 2))
         self.previous_vote = self.new_voter
+        self.train_metrics.append(self.plotted_metric.score(y, np.sign(self.previous_vote)))
         self.voters_weights.append(1)
 
     def record_infos(self, y, r,k):
@@ -235,8 +236,6 @@ class ColumnGenerationClassifierQar(BaseEstimator, ClassifierMixin, BaseBoost):
         new_weights = self.example_weights.reshape((self.n_total_examples, 1))*np.exp(-self.q*np.multiply(y,self.new_voter))
         self.example_weights = new_weights/np.sum(new_weights)
         self.example_weights_.append(self.example_weights)
-
-
 
     def _find_best_margin(self, y_kernel_matrix):
         """Used only on the first iteration to select the voter with the largest margin"""

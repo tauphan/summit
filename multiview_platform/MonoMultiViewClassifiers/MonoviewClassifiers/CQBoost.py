@@ -22,7 +22,7 @@ class CQBoost(ColumnGenerationClassifier, BaseMonoviewClassifier):
         return True
 
     def getInterpret(self, directory):
-        return getInterpretBase(self, directory, "CQBoost", self.weights_,)
+        return getInterpretBase(self, directory, "CQBoost", self.voters_weights, )
 
 
 def formatCmdArgs(args):
