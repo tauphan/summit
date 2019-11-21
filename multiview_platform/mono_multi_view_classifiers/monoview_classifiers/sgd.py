@@ -37,14 +37,12 @@ class SGD(SGDClassifier, BaseMonoviewClassifier):
 
     """
     def __init__(self, random_state=None, loss='hinge',
-                 penalty='l2', alpha=0.0001, max_iter=5, tol=None, **kwargs):
+                 penalty='l2', alpha=0.0001, **kwargs):
 
         super(SGD, self).__init__(
             loss=loss,
             penalty=penalty,
             alpha=alpha,
-            max_iter=5,
-            tol=None,
             random_state=random_state
         )
         self.param_names = ["loss", "penalty", "alpha", "random_state"]
