@@ -5,7 +5,7 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.validation import check_is_fitted
 
 from ..metrics import zero_one_loss
-from ..monoview.additions.BoostUtils import StumpsClassifiersGenerator, \
+from .additions.BoostUtils import StumpsClassifiersGenerator, \
     BaseBoost
 from ..monoview.monoview_utils import CustomRandint, \
     BaseMonoviewClassifier, change_label_to_minus, change_label_to_zero

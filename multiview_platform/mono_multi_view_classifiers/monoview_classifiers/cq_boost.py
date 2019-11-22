@@ -1,7 +1,7 @@
 import numpy as np
 
-from ..monoview.additions.BoostUtils import getInterpretBase
-from ..monoview.additions.CQBoostUtils import ColumnGenerationClassifier
+from .additions.BoostUtils import getInterpretBase
+from .additions.CQBoostUtils import ColumnGenerationClassifier
 from ..monoview.monoview_utils import CustomUniform, CustomRandint, \
     BaseMonoviewClassifier
 

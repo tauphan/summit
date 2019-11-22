@@ -18,7 +18,7 @@ from sklearn.utils.graph import graph_laplacian
 from sklearn.utils.validation import check_X_y
 
 from .BoostUtils import ConvexProgram
-from ..monoview_utils import change_label_to_zero, change_label_to_minus
+from ...monoview.monoview_utils import change_label_to_zero, change_label_to_minus
 
 
 class MinCqClassifier(VotingClassifier):

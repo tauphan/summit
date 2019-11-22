@@ -5,8 +5,8 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 from .. import metrics
-from ..monoview.additions.BoostUtils import get_accuracy_graph
-from ..monoview.additions.PregenUtils import PregenClassifier
+from .additions.BoostUtils import get_accuracy_graph
+from .additions.PregenUtils import PregenClassifier
 from ..monoview.monoview_utils import CustomRandint, BaseMonoviewClassifier, \
     change_label_to_zero
 

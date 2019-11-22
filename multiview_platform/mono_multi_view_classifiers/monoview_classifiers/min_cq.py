@@ -18,7 +18,7 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics.pairwise import rbf_kernel, linear_kernel, \
     polynomial_kernel
 # from qp import QP
-from ..monoview.additions.BoostUtils import ConvexProgram as QP
+from .additions.BoostUtils import ConvexProgram as QP
 
 
 classifier_class_name = "MinCQ"

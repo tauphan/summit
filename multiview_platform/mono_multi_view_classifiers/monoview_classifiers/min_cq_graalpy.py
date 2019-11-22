@@ -1,7 +1,7 @@
 import numpy as np
 
-from ..monoview.additions.BoostUtils import StumpsClassifiersGenerator
-from ..monoview.additions.MinCQUtils import RegularizedBinaryMinCqClassifier
+from .additions.BoostUtils import StumpsClassifiersGenerator
+from .additions.MinCQUtils import RegularizedBinaryMinCqClassifier
 from ..monoview.monoview_utils import BaseMonoviewClassifier, CustomUniform
 
 

@@ -3,7 +3,7 @@ import os
 import numpy as np
 from pyscm.scm import SetCoveringMachineClassifier as scm
 
-from ..monoview.additions.PregenUtils import PregenClassifier
+from .additions.PregenUtils import PregenClassifier
 from ..monoview.monoview_utils import CustomRandint, CustomUniform, \
     BaseMonoviewClassifier
 

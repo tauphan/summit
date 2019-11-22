@@ -1,4 +1,4 @@
-from ..monoview.additions.CGDescUtils import ColumnGenerationClassifierQar
+from .additions.CGDescUtils import ColumnGenerationClassifierQar
 from ..monoview.monoview_utils import BaseMonoviewClassifier, CustomRandint
 
 

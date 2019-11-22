@@ -3,7 +3,7 @@ import time
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 
-from ..monoview.additions.PregenUtils import PregenClassifier
+from .additions.PregenUtils import PregenClassifier
 from ..monoview.monoview_utils import CustomRandint, BaseMonoviewClassifier, \
     change_label_to_zero
 
