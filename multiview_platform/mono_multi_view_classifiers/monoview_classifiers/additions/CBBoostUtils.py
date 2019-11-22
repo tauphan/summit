@@ -10,7 +10,7 @@ from sklearn.utils.validation import check_is_fitted
 
 from .BoostUtils import StumpsClassifiersGenerator, sign, BaseBoost, \
     getInterpretBase, get_accuracy_graph, TreeClassifiersGenerator
-from ..monoview_utils import change_label_to_minus
+from ...monoview.monoview_utils import change_label_to_minus
 from ... import metrics
 
 

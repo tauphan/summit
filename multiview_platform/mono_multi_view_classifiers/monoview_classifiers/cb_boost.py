@@ -1,4 +1,4 @@
-from ..monoview.additions.CBBoostUtils import CBBoostClassifier
+from .additions.CBBoostUtils import CBBoostClassifier
 from ..monoview.monoview_utils import BaseMonoviewClassifier, CustomRandint
 
 
