@@ -22,9 +22,9 @@ Classification:
   nb_folds: 2
   nb_class: 2
   classes:
-  type: ["multiview"]
+  type: ["multiview", "monoview"]
   algos_monoview: ["all"]
-  algos_multiview: ["weighted_linear_early_fusion"]
+  algos_multiview: ["all"]
   stats_iter: 2
   metrics: ["accuracy_score", "f1_score"]
   metric_princ: "f1_score"
@@ -127,7 +127,7 @@ gradient_boosting:
 ######################################
 
 weighted_linear_early_fusion:
-  view_weights: [None]
+  view_weights: [null]
   monoview_classifier_name: ["decision_tree"]
   monoview_classifier_config:
     decision_tree:
@@ -204,7 +204,7 @@ weighted_linear_late_fusion:
       splitter: ["best"]
 
 mumbo:
-  base_estimator: [None]
+  base_estimator: [null]
   n_estimators: [10]
   best_view_mode: ["edge"]
 
