@@ -20,7 +20,7 @@ class LPNormMKL(KernelClassifier, MKL):
                                                       use_approx=use_approx,
                                                       kernel_params=kernel_params)
         self.param_names = ["lmbda", "kernel", "kernel_params"]
-        self.distribs = [CustomUniform(), KernelGenerator(),
+        self.distribs = [CustomUniform(), ['rbf', 'additive_chi2', 'poly' ],
                          KernelConfigGenerator()]
 
 
