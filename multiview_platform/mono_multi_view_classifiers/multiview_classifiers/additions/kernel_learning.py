@@ -68,8 +68,9 @@ class KernelConfigDistribution:
     def __init__(self, seed=42):
         self.random_state=np.random.RandomState(seed)
         self.possible_config = {
-            "chi2": {"gamma": CustomUniform()},
+            "additive_chi2": {"gamma": CustomUniform()},
             "rbf": {"gamma": CustomUniform()},
+            "poly":{"degree": CustomRandint(1,4), "gamma":CustomUniform()}
         }
 
     def draw(self, nb_view):

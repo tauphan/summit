@@ -3,9 +3,9 @@ import numpy as np
 import pandas as pd
 import time
 
-from ..mono_multi_view_classifiers import result_analysis
-from ..mono_multi_view_classifiers.multiview.multiview_utils import MultiviewResult
-from ..mono_multi_view_classifiers.monoview.monoview_utils import MonoviewResult
+from multiview_platform.mono_multi_view_classifiers import result_analysis
+from multiview_platform.mono_multi_view_classifiers.multiview.multiview_utils import MultiviewResult
+from multiview_platform.mono_multi_view_classifiers.monoview.monoview_utils import MonoviewResult
 
 
 class Test_get_arguments(unittest.TestCase):

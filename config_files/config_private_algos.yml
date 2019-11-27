@@ -22,9 +22,9 @@ Classification:
   nb_folds: 2
   nb_class: 2
   classes:
-  type: ["monoview"]
-  algos_monoview: ["all", ]
-  algos_multiview: ["weighted_linear_early_fusion"]
+  type: ["multiview", "monoview"]
+  algos_monoview: ["all"]
+  algos_multiview: ["all"]
   stats_iter: 2
   metrics: ["accuracy_score", "f1_score"]
   metric_princ: "f1_score"
@@ -109,6 +109,10 @@ cg_desc:
 cb_boost:
   n_max_iterations: [10]
   n_stumps: [1]
+
+min_cq:
+  mu: [0.0001]
+  n_stumps_per_attribute: [1]
 
 lasso:
   alpha: [1]
@@ -217,11 +221,12 @@ lp_norm_mkl:
     gamma: [0.1]
 
 mvml:
-  reg_params: [[0,1]]
+  lmbda: [0.1]
+  eta: [0.1]
   nystrom_param: [1]
   learn_A: [1]
   learn_w: [0]
   n_loops: [6]
-  kernel_types: ["rbf_kernel"]
-  kernel_configs:
+  kernel: ["rbf_kernel"]
+  kernel_params:
     gamma: [0.1]

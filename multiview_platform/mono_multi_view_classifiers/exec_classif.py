@@ -807,7 +807,7 @@ def exec_classif(arguments):
 
             directory = execution.init_log_file(dataset_name, args["Base"]["views"], args["Classification"]["type"],
                                               args["Base"]["log"], args["Base"]["debug"], args["Base"]["label"],
-                                              args["Base"]["res_dir"], args["Base"]["add_noise"], noise_std)
+                                              args["Base"]["res_dir"], args["Base"]["add_noise"], noise_std, args)
             random_state = execution.init_random_state(args["Base"]["random_state"], directory)
             stats_iter_random_states = execution.init_stats_iter_random_states(stats_iter,
                                                                         random_state)
@@ -850,7 +850,7 @@ def exec_classif(arguments):
                                                                "matthews_corrcoef",
                                                                "roc_auc_score"]]
                 metrics = [[metricName] for metricName in metrics_names]
-                metrics = arange_metrics(metrics, args["Classification"]["metric_princ"])
+            metrics = arange_metrics(metrics, args["Classification"]["metric_princ"])
             for metricIndex, metric in enumerate(metrics):
                 if len(metric) == 1:
                     metrics[metricIndex] = [metric[0], None]
