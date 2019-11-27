@@ -157,13 +157,14 @@ class MinCqLearner(BaseEstimator, ClassifierMixin):
                 logging.info(
                     "First moment of the margin on the training set: {:.4f}".format(
                         np.mean(y_reworked * self.majority_vote.margin(X))))
+            self.cbound_train = self.majority_vote.cbound_value(X, y_reworked)
 
         except Exception as e:
             logging.error(
                 "{}: Error while solving the quadratic program: {}.".format(
                     str(self), str(e)))
             self.majority_vote = None
-        self.cbound_train = self.majority_vote.cbound_value(X, y_reworked)
+
         end=time.time()
         self.train_time=end-beg
         return self
