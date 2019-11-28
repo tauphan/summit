@@ -16,3 +16,4 @@ docutils==0.12
 pyyaml==3.12
 cvxopt==1.2.0
 plotly==4.2.1
+-e git+https://gitlab.lis-lab.fr/dominique.benielli/multiviewmetriclearning
