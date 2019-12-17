@@ -21,7 +21,7 @@ def parse_the_args(arguments):
         fromfile_prefix_chars='@')
 
     groupStandard = parser.add_argument_group('Standard arguments')
-    groupStandard.add_argument('--path_config', metavar='STRING', action='store',
+    groupStandard.add_argument('--config_path', metavar='STRING', action='store',
                                help='Path to the hdf5 dataset or database '
                                     'folder (default: %(default)s)',
                                default='../config_files/config.yml')
@@ -53,6 +53,7 @@ def init_random_state(random_state_arg, directory):
     random_state : numpy.random.RandomState object
         This random state will be used all along the benchmark .
     """
+
     if random_state_arg is None:
         random_state = np.random.RandomState(random_state_arg)
     else:
@@ -63,7 +64,7 @@ def init_random_state(random_state_arg, directory):
             file_name = random_state_arg
             with open(file_name, 'rb') as handle:
                 random_state = pickle.load(handle)
-    with open(directory + "random_state.pickle", "wb") as handle:
+    with open(os.path.join(directory, "random_state.pickle"), "wb") as handle:
         pickle.dump(random_state, handle)
     return random_state
 
@@ -151,25 +152,21 @@ def init_log_file(name, views, cl_type, log, debug, label,
     """
     if views is None:
         views=[]
-    noise_string = "/n_"+str(int(noise_std*100))
+    noise_string = "n_"+str(int(noise_std*100))
+    result_directory = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))), result_directory)
     if debug:
-        result_directory = result_directory + name + noise_string + \
-                           "/debug_started_" + \
-                           time.strftime(
-                               "%Y_%m_%d-%H_%M_%S") + "_" + label + "/"
+        result_directory = os.path.join(result_directory, name, noise_string,
+                           "debug_started_" + time.strftime("%Y_%m_%d-%H_%M_%S") + "_" + label)
     else:
-        result_directory = result_directory + name + noise_string+ "/started_" + time.strftime(
-            "%Y_%m_%d-%H_%M") + "_" + label + "/"
-    log_file_name = time.strftime("%Y_%m_%d-%H_%M") + "-" + ''.join(
-        cl_type) + "-" + "_".join(
-        views) + "-" + name + "-LOG"
-    if os.path.exists(os.path.dirname(result_directory)):
+        result_directory = os.path.join(result_directory, name,  noise_string,
+                                        "started_" + time.strftime("%Y_%m_%d-%H_%M") + "_" + label)
+    log_file_name = time.strftime("%Y_%m_%d-%H_%M") + "-" + ''.join(cl_type) + "-" + "_".join(views) + "-" + name + "-LOG.log"
+    if os.path.exists(result_directory):
         raise NameError("The result dir already exists, wait 1 min and retry")
-    os.makedirs(os.path.dirname(result_directory + log_file_name))
-    log_file = result_directory + log_file_name
-    log_file += ".log"
+    log_file_path = os.path.join(result_directory, log_file_name)
+    os.makedirs(os.path.dirname(log_file_path))
     logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s',
-                        filename=log_file, level=logging.DEBUG,
+                        filename=log_file_path, level=logging.DEBUG,
                         filemode='w')
     if log:
         logging.getLogger().addHandler(logging.StreamHandler())
@@ -304,7 +301,7 @@ def gen_direcorties_names(directory, stats_iter):
     if stats_iter > 1:
         directories = []
         for i in range(stats_iter):
-            directories.append(directory + "iter_" + str(i + 1) + "/")
+            directories.append(os.path.join(directory, "iter_" + str(i + 1)))
     else:
         directories = [directory]
     return directories
@@ -313,12 +310,9 @@ def gen_direcorties_names(directory, stats_iter):
 def find_dataset_names(path, type, names):
     """This function goal is to browse the dataset directory and extrats all
      the needed dataset names."""
-    config_path = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(config_path, "../..")
-    path = os.path.join(config_path, path)
-
+    module_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
     available_file_names = [file_name.strip().split(".")[0]
-                            for file_name in os.listdir(path)
+                            for file_name in os.listdir(os.path.join(module_path, path))
                             if file_name.endswith(type)]
     if names == ["all"]:
         return available_file_names
@@ -387,10 +381,10 @@ def gen_argument_dictionaries(labels_dictionary, directories, multiclass_labels,
                 "labels_dictionary": {0: labels_dictionary[labels_combination[0]],
                                       1: labels_dictionary[
                                           labels_combination[1]]},
-                "directory": directories[iter_index] +
+                "directory": os.path.join(directories[iter_index],
                              labels_dictionary[labels_combination[0]] +
                              "-vs-" +
-                             labels_dictionary[labels_combination[1]] + "/",
+                             labels_dictionary[labels_combination[1]]),
                 "classification_indices": [
                     indices_multiclass[combination_index][0][iter_index],
                     indices_multiclass[combination_index][1][iter_index],

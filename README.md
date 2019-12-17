@@ -10,85 +10,60 @@ This project aims to be an easy-to-use solution to run a prior benchmark on a da
 
 To be able to use this project, you'll need :
 
-* [Python 2.7](https://docs.python.org/2/) or [Python 3](https://docs.python.org/3/) 
+* [Python 3.6](https://docs.python.org/3/) 
 
 And the following python modules :
-* [pyscm](https://github.com/aldro61/pyscm) - Set Covering Machine, Marchand, M., & Taylor, J. S. (2003) by A.Drouin, F.Brochu, G.Letarte St-Pierre, M.Osseni, P-L.Plante
-* [numpy](http://www.numpy.org/), [scipy](https://scipy.org/)
-* [matplotlib](http://matplotlib.org/) - Used to plot results
-* [sklearn](http://scikit-learn.org/stable/) - Used for the monoview classifiers
-* [joblib](https://pypi.python.org/pypi/joblib) - Used to compute on multiple threads
-* [h5py](https://www.h5py.org) - Used to generate HDF5 datasets on hard drive and use them to spare RAM
-* [pickle](https://docs.python.org/3/library/pickle.html) - Used to store some results
-* ([graphviz](https://pypi.python.org/pypi/graphviz) - Used for decision tree interpretation)
-* [pandas](https://pandas.pydata.org/) - 
+
+* [numpy](http://www.numpy.org/), [scipy](https://scipy.org/),
+* [matplotlib](http://matplotlib.org/) - Used to plot results,
+* [sklearn](http://scikit-learn.org/stable/) - Used for the monoview classifiers,
+* [joblib](https://pypi.python.org/pypi/joblib) - Used to compute on multiple threads,
+* [h5py](https://www.h5py.org) - Used to generate HDF5 datasets on hard drive and use them to spare RAM,
+* [pickle](https://docs.python.org/3/library/pickle.html) - Used to store some results,
+* [pandas](https://pandas.pydata.org/) - Used to manipulate data efficiently,
+* [six](https://pypi.org/project/six/) - 
+* [m2r](https://pypi.org/project/m2r/) - Used to generate documentation from the readme,
+* [docutils](https://pypi.org/project/docutils/) - Used to generate documentation,
+* [pyyaml](https://pypi.org/project/PyYAML/) - Used to read the config files,
+* [plotly](https://plot.ly/) - Used to generate interactive HTML visuals.
 
 They are all tested in  `multiview-machine-mearning-omis/multiview_platform/MonoMutliViewClassifiers/Versions.py` which is automatically checked each time you run the `execute` script
 
 ### Installing
 
-cd in the project directory
-and install the project
+Once you cloned the project from this repository, you just have to use :  
 
 ```
-cd multiview-machine-learning-omis
 pip install -e .
 ```
+In the `multiview_machine-learning-omis` directory.
 
 ### Running on simulated data
 
 In order to run it you'll need to try on **simulated** data with the command
+```python 
+from multiview_platform.execute import execute
+execute()
 ```
-cd multiview-machine-learning-omis/multiview_platform
-python execute.py -log
-```
-Results will be stored in `multiview-machine-learning-omis/multiview_platform/mono_multi_view_classifiers/results/`
-
-If you want to run a multiclass (one versus one) benchmark on simulated data, use : 
-```
-cd multiview-machine-learning-omis/multiview_platform
-python execute.py -log --CL_nbClass 3
-```
-
-If no path is specified, simulated hdf5 datasets are stored in `multiview-machine-learning-omis/data`
-
+This will run the first example. For more information about the examples, see the documentation 
+Results will be stored in the results directory of the installation path : 
+`path/to/install/multiview-machine-learning-omis/multiview_platform/examples/results`.
+The documentations proposes a detailed interpretation of the results. 
 
 ### Discovering the arguments
 
-In order to see all the arguments of this script, their description and default values run :
-```
-cd multiview-machine-learning-omis/multiview_platform
-python execute.py -h
-```
-The arguments can be passed through a file using `python Exec.py @<path_to_doc>`
-The file must be formatted with one newline instead of each space : 
-Command line arguments `-debug --CL_type Monoview --CL_algos_monoview Adaboost SVM` will be formatted 
-```
--debug
---CL_type
-Monoview
---CL_algos_monoview
-Adaboost
-SVM
+All the arguments of the platform are stored in a YAML config file. Some config files are given as examples. 
+The file stored in `multiview-machine-learning-omis/config_files/config.yml` is documented and it is highly recommended
+ to read it carefully before playing around with the parameters.   
+
+You can create your own configuration file. In order to run the platform with it, run : 
+```python
+from multiview_platform.execute import execute
+execute(config_path="/absolute/path/to/your/config/file")
 ```
 
-Moreover, for Monoview algorithms (Multiview is still WIP), it is possible to pass multiple arguments instead of just one. 
-Thus, executing `python execute.py --RF_trees 10 100 --RF_max_depth 3 4 --RF_criterion entropy` will result in the generation of several classifiers called
-`RandomForest_10_3_entropy`, with 10 trees and a max depth of 3, `RandomForest_10_4_entropy`, with 10 tress and a max depth of 4,  `RandomForest_100_3_entropy`, `RandomForest_100_4_entropy` to test all the passed arguments combinations. 
+For further information about classifier-specific arguments, see the documentation. 
  
-
-
-### Understanding `results/` architecture
-
-Results are stored in `multiview-machine-learning-omis/multiview_platform/mono_multi_view_classifiers/results/`
-A directory will be created with the name of the database used to run the script.
-For each time the script is run, a new directory named after the running date and time will be created.
-In that directory:
-* If the script is run using more than one statistic iteration (one for each seed), it will create one directory for each iteration and store the statistical analysis in the current directory 
-* If it is run with one iteration, the iteration results will be stored in the current directory
-
-The results for each iteration are graphs plotting the classifiers scores and the classifiers config and results are stored in a directory of their own.
-To explore the results run the `execute` script and go in `multiview-machine-learning-omis/multiview_platform/mono_multi_view_classifiers/results/plausible/`
 
 ### Dataset compatibility
 

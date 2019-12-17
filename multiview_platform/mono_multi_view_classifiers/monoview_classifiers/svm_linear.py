@@ -1,4 +1,4 @@
-from .additions.SVCClassifier import SVCClassifier
+from multiview_platform.mono_multi_view_classifiers.monoview_classifiers.additions.SVCClassifier import SVCClassifier
 from ..monoview.monoview_utils import CustomUniform, BaseMonoviewClassifier
 
 # Author-Info
@@ -36,8 +36,7 @@ class SVMLinear(SVCClassifier, BaseMonoviewClassifier):
 
     def getInterpret(self, directory, y_test):
         interpret_string = ""
-        import numpy as np
-        self.feature_importances_ = (self.coef_/np.sum(self.coef_)).reshape((self.coef_.shape[1],))
+        # self.feature_importances_ = (self.coef_/np.sum(self.coef_)).reshape((self.coef_.shape[1],))
         return interpret_string
 
 
