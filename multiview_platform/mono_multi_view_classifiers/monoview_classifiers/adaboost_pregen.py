@@ -70,7 +70,7 @@ class AdaboostPregen(AdaBoostClassifier, BaseMonoviewClassifier,
     """
     def __init__(self, random_state=None, n_estimators=50,
                  base_estimator=None, n_stumps=1, estimators_generator="Stumps",
-                 max_depth=1, self_complemeted=True,
+                 max_depth_pregen=1, self_complemeted=True,
                  **kwargs):
         super(AdaboostPregen, self).__init__(
             random_state=random_state,
@@ -79,7 +79,7 @@ class AdaboostPregen(AdaBoostClassifier, BaseMonoviewClassifier,
             algorithm="SAMME"
         )
         self.param_names = ["n_estimators", "base_estimator", "n_stumps",
-                            "estimators_generator", "max_depth",
+                            "estimators_generator", "max_depth_pregen",
                             "random_state"]
         self.classed_params = ["base_estimator"]
         self.distribs = [CustomRandint(low=1, high=500),
@@ -91,7 +91,7 @@ class AdaboostPregen(AdaBoostClassifier, BaseMonoviewClassifier,
         self.plotted_metric_name = "zero_one_loss"
         self.step_predictions = None
         self.estimators_generator = estimators_generator
-        self.max_depth = max_depth
+        self.max_depth_pregen = max_depth_pregen
         self.n_stumps = n_stumps
         self.self_complemented = self_complemeted
 

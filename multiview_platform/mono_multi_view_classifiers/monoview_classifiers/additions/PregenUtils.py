@@ -14,7 +14,7 @@ class PregenClassifier(BaseBoost):
                     self_complemented=self.self_complemented)
             elif generator is "Trees":
                 self.estimators_generator = TreeClassifiersGenerator(
-                    n_trees=self.n_stumps, max_depth=self.max_depth)
+                    n_trees=self.n_stumps, max_depth=self.max_depth_pregen)
             self.estimators_generator.fit(X, neg_y)
         else:
             neg_y = None
