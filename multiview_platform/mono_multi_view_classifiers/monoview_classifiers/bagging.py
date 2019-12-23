@@ -44,15 +44,14 @@ class Bagging(BaggingClassifier, BaseMonoviewClassifier,):
     def fit(self, X, y, sample_weight=None):
         """
         """
+        self.max_features = float(self.max_features)
+        if self.max_features == 0:
+            self.max_features = 0.01
         begin = time.time()
         super(Bagging, self).fit(X, y, sample_weight=sample_weight)
         end = time.time()
         self.train_time = end - begin
         self.train_shape = X.shape
-        # self.base_predictions = np.array(
-        #     [change_label_to_zero(estim.predict(X)) for estim in
-        #      self.estimators_])
-
 
 
     def predict(self, X):
