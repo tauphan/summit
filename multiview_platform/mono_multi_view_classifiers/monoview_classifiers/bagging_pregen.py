@@ -55,8 +55,8 @@ class BaggingPregen(BaggingClassifier, BaseMonoviewClassifier,
         """
         """
         self.max_features = float(self.max_features)
-        if self.max_features == 0:
-            self.max_features = 0.01
+        if self.max_features == 0.0:
+            self.max_features = 1
         begin = time.time()
         pregen_X, pregen_y = self.pregen_voters(X, y)
         super(BaggingPregen, self).fit(pregen_X, pregen_y,
@@ -64,9 +64,6 @@ class BaggingPregen(BaggingClassifier, BaseMonoviewClassifier,
         end = time.time()
         self.train_time = end - begin
         self.train_shape = pregen_X.shape
-        # self.base_predictions = np.array(
-        #     [change_label_to_zero(estim.predict(pregen_X)) for estim in
-        #      self.estimators_])
 
 
 
