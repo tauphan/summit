@@ -45,10 +45,8 @@ class Bagging(BaggingClassifier, BaseMonoviewClassifier,):
         """
         """
         self.max_features = float(self.max_features)
-        if self.max_features == 0.0:
+        if self.max_features == 0.0 or self.max_features*X.shape[1]==0:
             self.max_features = 1
-        print(self.max_features)
-        print(X.shape[1])
         begin = time.time()
         super(Bagging, self).fit(X, y, sample_weight=sample_weight)
         end = time.time()
