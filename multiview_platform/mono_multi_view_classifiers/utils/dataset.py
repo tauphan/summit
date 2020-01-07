@@ -322,7 +322,12 @@ class Dataset():
         mutliplied by this range) and we crop the noisy signal according to the
         view's attributes limits.
         This is done by creating a new dataset, to keep clean data."""
-        noisy_dataset = h5py.File(path + self.get_name() + "_noised.hdf5", "w")
+        if not os.path.exists(path + self.get_name() + "_noised.hdf5"):
+            noisy_dataset = h5py.File(path + self.get_name() + "_noised.hdf5", "w")
+        else:
+            i=0
+            while os.path.exists(path + self.get_name() + "_noised_"+str(i)+".hdf5"):
+                i+=1
         self.dataset.copy("Metadata", noisy_dataset)
         self.dataset.copy("Labels", noisy_dataset)
         for view_index in range(self.nb_view):

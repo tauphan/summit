@@ -1,4 +1,4 @@
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 import time
@@ -15,9 +15,9 @@ __author__ = "Baptiste Bauvin"
 __status__ = "Prototype"  # Production, Development, Prototype
 
 
-classifier_class_name = "RandomForestPregen"
+classifier_class_name = "GradientBoostingPregen"
 
-class RandomForestPregen(RandomForestClassifier, BaseMonoviewClassifier,
+class GradientBoostingPregen(GradientBoostingClassifier, BaseMonoviewClassifier,
                          PregenClassifier):
     """
 
@@ -25,7 +25,7 @@ class RandomForestPregen(RandomForestClassifier, BaseMonoviewClassifier,
     def __init__(self, random_state=None, n_estimators=50, loss="deviance", learning_rate=1.0, subsample=1.0, max_depth=1, estimators_generator="Stumps",
                  max_depth_pregen=1, self_complemeted=True, n_stumps=1,
                  **kwargs):
-        super(RandomForestPregen, self).__init__(
+        super(GradientBoostingPregen, self).__init__(
             random_state=random_state,
             n_estimators=n_estimators,
             loss=loss,
@@ -37,10 +37,9 @@ class RandomForestPregen(RandomForestClassifier, BaseMonoviewClassifier,
                             "estimators_generator", "max_depth_pregen",
                             "random_state", "loss", "learning_rate", "subsample", "max_depth" ]
         self.classed_params = []
-        self.distribs = [CustomRandint(low=1, high=500),
-                         [DecisionTreeClassifier(max_depth=1)], [n_stumps],
+        self.distribs = [CustomRandint(low=1, high=500), [n_stumps],
                          ["Stumps",], CustomRandint(low=1, high=5),
-                         [random_state], ["gini", "entropy"], [CustomRandint(low=1, high=5)], ]
+                         [random_state], ["deviance", "exponential"], CustomUniform(), [1.0], [1], ]
         self.weird_strings = {}
         self.plotted_metric = metrics.zero_one_loss
         self.plotted_metric_name = "zero_one_loss"
@@ -55,14 +54,14 @@ class RandomForestPregen(RandomForestClassifier, BaseMonoviewClassifier,
         """
         begin = time.time()
         pregen_X, pregen_y = self.pregen_voters(X, y)
-        super(RandomForestPregen, self).fit(pregen_X, pregen_y,
+        super(GradientBoostingPregen, self).fit(pregen_X, pregen_y,
                                             sample_weight=sample_weight)
         end = time.time()
         self.train_time = end - begin
         self.train_shape = pregen_X.shape
-        self.base_predictions = np.array(
-            [change_label_to_zero(estim.predict(pregen_X)) for estim in
-             self.estimators_])
+        # self.base_predictions = np.array(
+        #     [change_label_to_zero(estim.predict(pregen_X)) for estim in
+        #      self.estimators_])
 
 
 
@@ -82,7 +81,7 @@ class RandomForestPregen(RandomForestClassifier, BaseMonoviewClassifier,
         """
         begin = time.time()
         pregen_X, _ = self.pregen_voters(X)
-        pred = super(RandomForestPregen, self).predict(pregen_X)
+        pred = super(GradientBoostingPregen, self).predict(pregen_X)
         end = time.time()
         self.pred_time = end - begin
         return change_label_to_zero(pred)

@@ -38,7 +38,7 @@ class RandomForestPregen(RandomForestClassifier, BaseMonoviewClassifier,
         self.distribs = [CustomRandint(low=1, high=500),
                          [n_stumps],
                          ["Stumps",], CustomRandint(low=1, high=5),
-                         [random_state], ["gini", "entropy"], [CustomRandint(low=1, high=5)], ]
+                         [random_state], ["gini", "entropy"], CustomRandint(low=1, high=5), ]
         self.weird_strings = {}
         self.plotted_metric = metrics.zero_one_loss
         self.plotted_metric_name = "zero_one_loss"
