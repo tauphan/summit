@@ -640,7 +640,7 @@ def get_feature_importances(result, feature_names=None):
         if isinstance(classifier_result, MonoviewResult):
             if classifier_result.view_name not in feature_importances:
                 feature_importances[classifier_result.view_name] = pd.DataFrame(index=feature_names)
-            if hasattr(classifier_result.clf, 'feature_importances_'):
+            if hasattr(classifier_result.clf, 'feature_importances_pregen_plif'):
                 feature_importances[classifier_result.view_name][classifier_result.classifier_name] = classifier_result.clf.feature_importances_
             else:
                 feature_importances[classifier_result.view_name][classifier_result.classifier_name] = np.zeros(classifier_result.n_features)
