@@ -14,7 +14,8 @@ import numpy as np
 from sklearn.ensemble import VotingClassifier
 from sklearn.manifold import SpectralEmbedding
 from sklearn.preprocessing import LabelEncoder
-from sklearn.utils.graph import graph_laplacian
+# from sklearn.utils.graph import graph_laplacian
+from scipy.sparse.csgraph import laplacian as graph_laplacian
 from sklearn.utils.validation import check_X_y
 
 from .BoostUtils import ConvexProgram
@@ -317,5 +318,5 @@ def build_laplacian(X, n_neighbors=None):
     clf = SpectralEmbedding(n_neighbors=n_neighbors)
     clf.fit(X)
     w = clf.affinity_matrix_
-    laplacian = graph_laplacian(w, normed=True)
+    laplacian, dd = graph_laplacian(w, normed=True)
     return laplacian
