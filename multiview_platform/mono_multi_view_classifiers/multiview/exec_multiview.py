@@ -98,7 +98,8 @@ def save_results(classifier, labels_dictionary, string_analysis, views, classifi
     """
     labels_set = set(labels_dictionary.values())
     logging.info(string_analysis)
-    views_string = "-".join(views)
+    # views_string = "-".join(views)
+    views_string = "mv"
     labels_string = "-".join(labels_set)
     timestr = time.strftime("%Y_%m_%d-%H_%M_%S")
     cl_type_string = classifier.short_name
@@ -291,9 +292,9 @@ def exec_multiview(directory, dataset_var, name, classification_indices, k_folds
     for test_index, index in enumerate(validation_indices):
         full_labels[index] = test_labels[test_index]
     if test_indices_multiclass != []:
-        test_labels_multiclass = classifier.predict_hdf5(dataset_var,
-                                                         used_indices=test_indices_multiclass,
-                                                         views_indices=views_indices)
+        test_labels_multiclass = classifier.predict(dataset_var,
+                                                    example_indices=test_indices_multiclass,
+                                                    view_indices=views_indices)
     else:
         test_labels_multiclass = []
     logging.info("Done:\t Pertidcting")

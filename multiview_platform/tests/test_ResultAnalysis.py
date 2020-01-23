@@ -154,7 +154,7 @@ class Test_init_plot(unittest.TestCase):
                                                                    directory,
                                                                    database_name,
                                                                    labels_names)
-        self.assertEqual(file_name, "dir"+time.strftime(
+        self.assertEqual(file_name, "dir/"+time.strftime(
             "%Y_%m_%d-%H_%M_%S")+"-db-lb1_vs_lb2-acc")
         np.testing.assert_array_equal(train, data[0,:])
         np.testing.assert_array_equal(test, data[1, :])
@@ -182,7 +182,7 @@ class Test_gen_error_data(unittest.TestCase):
 class Test_format_previous_results(unittest.TestCase):
 
     def test_simple(self):
-        biclass_results = {"01":{"metrics_scores":[], "example_errors":[], "feature_importances":[]}}
+        biclass_results = {"01":{"metrics_scores":[], "example_errors":[], "feature_importances":[], "labels":[]}}
         random_state = np.random.RandomState(42)
 
         # Gen metrics data
@@ -260,6 +260,8 @@ class Test_gen_error_data_glob(unittest.TestCase):
         np.testing.assert_array_equal(data, np.array([ada_sum, mv_sum]).transpose())
         np.testing.assert_array_equal(error_on_examples, -1*np.sum(np.array([ada_sum, mv_sum]), axis=0)+(nb_classifiers*stats_iter))
         self.assertEqual(classifier_names, ["ada-1", "mv"])
+
+
 
 
 

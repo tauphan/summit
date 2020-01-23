@@ -1,11 +1,11 @@
 # The base configuration of the benchmark
 Base :
   log: True
-  name: ["bupa"]
+  name: ["awa-tiger-wolf-all"]
   label: "_"
   type: ".hdf5"
   views:
-  pathf: "/home/baptiste/Documents/Datasets/UCI/both/"
+  pathf: "/home/baptiste/Documents/Datasets/AWA/base/"
   nice: 0
   random_state: 42
   nb_cores: 1
@@ -18,18 +18,18 @@ Base :
 # All the classification-realted configuration options
 Classification:
   multiclass_method: "oneVersusOne"
-  split: 0.51
+  split: 0.9
   nb_folds: 2
   nb_class: 2
   classes:
-  type: ["monoview"]
-  algos_monoview: ["adaboost",]
-  algos_multiview: ["weighted_linear_early_fusion"]
+  type: ["multiview", "monoview"]
+  algos_monoview: ["decision_tree", "adaboost", "random_forest" ]
+  algos_multiview: ["weighted_linear_early_fusion",]
   stats_iter: 1
   metrics: ["accuracy_score", "f1_score"]
   metric_princ: "f1_score"
-  hps_type: "randomized_search"
-  hps_iter: 30
+  hps_type: "randomized_search-equiv"
+  hps_iter: 5
 
 
 #####################################
@@ -65,7 +65,7 @@ adaboost_graalpy:
   n_stumps: [1]
 
 decision_tree:
-  max_depth: [10]
+  max_depth: [2]
   criterion: ["gini"]
   splitter: ["best"]
 
@@ -132,7 +132,7 @@ weighted_linear_early_fusion:
       splitter: ["best"]
 
 entropy_fusion:
-  classifier_names: [["decision_tree"]]
+  classifiers_names: [["decision_tree"]]
   classifier_configs:
     decision_tree:
       max_depth: [1]
@@ -140,7 +140,7 @@ entropy_fusion:
       splitter: ["best"]
 
 disagree_fusion:
-  classifier_names: [["decision_tree"]]
+  classifiers_names: [["decision_tree"]]
   classifier_configs:
     decision_tree:
       max_depth: [1]
@@ -149,7 +149,7 @@ disagree_fusion:
 
 
 double_fault_fusion:
-  classifier_names: [["decision_tree"]]
+  classifiers_names: [["decision_tree"]]
   classifier_configs:
     decision_tree:
       max_depth: [1]
@@ -157,7 +157,7 @@ double_fault_fusion:
       splitter: ["best"]
 
 difficulty_fusion:
-  classifier_names: [["decision_tree"]]
+  classifiers_names: [["decision_tree"]]
   classifier_configs:
     decision_tree:
       max_depth: [1]
@@ -165,7 +165,7 @@ difficulty_fusion:
       splitter: ["best"]
 
 scm_late_fusion:
-  classifier_names: [["decision_tree"]]
+  classifiers_names: [["decision_tree"]]
   p: 0.1
   max_rules: 10
   model_type: 'conjunction'
@@ -176,7 +176,7 @@ scm_late_fusion:
       splitter: ["best"]
 
 majority_voting_fusion:
-  classifier_names: [["decision_tree", "decision_tree", "decision_tree", ]]
+  classifiers_names: [["decision_tree", "decision_tree", "decision_tree", ]]
   classifier_configs:
     decision_tree:
       max_depth: [1]
@@ -184,7 +184,7 @@ majority_voting_fusion:
       splitter: ["best"]
 
 bayesian_inference_fusion:
-  classifier_names: [["decision_tree", "decision_tree", "decision_tree", ]]
+  classifiers_names: [["decision_tree", "decision_tree", "decision_tree", ]]
   classifier_configs:
     decision_tree:
       max_depth: [1]
@@ -192,7 +192,7 @@ bayesian_inference_fusion:
       splitter: ["best"]
 
 weighted_linear_late_fusion:
-  classifier_names: [["decision_tree", "decision_tree", "decision_tree", ]]
+  classifiers_names: [["decision_tree", "decision_tree", "decision_tree", ]]
   classifier_configs:
     decision_tree:
       max_depth: [1]
@@ -221,3 +221,5 @@ mvml:
   kernel_types: ["rbf_kernel"]
   kernel_configs:
     gamma: [0.1]
+
+
