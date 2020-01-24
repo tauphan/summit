@@ -1,7 +1,7 @@
 
 from metriclearning.mvml import MVML
 
-from ..multiview.multiview_utils import BaseMultiviewClassifier, get_examples_views_indices
+from ..multiview.multiview_utils import BaseMultiviewClassifier, FakeEstimator
 from .additions.kernel_learning import KernelClassifier, KernelConfigGenerator, KernelGenerator
 from ..utils.hyper_parameter_search import CustomUniform, CustomRandint
 
@@ -36,7 +36,10 @@ class MVMLClassifier(KernelClassifier, MVML):
 
     def fit(self, X, y, train_indices=None, view_indices=None):
         formatted_X, train_indices = self.format_X(X, train_indices, view_indices)
-        self.init_kernels(nb_view=len(formatted_X))
+        try:
+            self.init_kernels(nb_view=len(formatted_X))
+        except:
+            return FakeEstimator()
         return super(MVMLClassifier, self).fit(formatted_X, y[train_indices])
 
     def predict(self, X, example_indices=None, view_indices=None):

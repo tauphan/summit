@@ -1,7 +1,7 @@
 
 from metriclearning.lpMKL import MKL
 
-from ..multiview.multiview_utils import BaseMultiviewClassifier, get_examples_views_indices
+from ..multiview.multiview_utils import BaseMultiviewClassifier, FakeEstimator
 from .additions.kernel_learning import KernelClassifier, KernelConfigGenerator, KernelGenerator
 from ..utils.hyper_parameter_search import CustomUniform, CustomRandint
 
@@ -29,7 +29,7 @@ class LPNormMKL(KernelClassifier, MKL):
         try:
             self.init_kernels(nb_view=len(formatted_X))
         except:
-            return FakeClassifier()
+            return FakeEstimator()
 
         return super(LPNormMKL, self).fit(formatted_X, y[train_indices])
 

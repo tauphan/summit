@@ -197,7 +197,7 @@ class MultiviewCompatibleRandomizedSearchCV(RandomizedSearchCV):
             for fold_idx, (train_indices, test_indices) in enumerate(folds):
                 current_estimator = clone(base_estimator)
                 current_estimator.set_params(**candidate_param)
-                current_estimator.fit(X, y,
+                current_estimator = current_estimator.fit(X, y,
                                       train_indices=self.available_indices[train_indices],
                                       view_indices=self.view_indices)
                 test_prediction = current_estimator.predict(
