@@ -26,7 +26,10 @@ class LPNormMKL(KernelClassifier, MKL):
 
     def fit(self, X, y, train_indices=None, view_indices=None):
         formatted_X, train_indices = self.format_X(X, train_indices, view_indices)
-        self.init_kernels(nb_view=len(formatted_X))
+        try:
+            self.init_kernels(nb_view=len(formatted_X))
+        except:
+            return FakeClassifier()
 
         return super(LPNormMKL, self).fit(formatted_X, y[train_indices])
 
