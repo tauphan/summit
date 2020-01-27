@@ -1,11 +1,11 @@
 # The base configuration of the benchmark
 Base :
   log: True
-  name: ["plausible"]
+  name: ["metrics"]
   label: "_"
   type: ".hdf5"
   views:
-  pathf: "../data/"
+  pathf: "/home/baptiste/Documents/Datasets/Generated/metrics_dset/"
   nice: 0
   random_state: 42
   nb_cores: 1
@@ -18,14 +18,14 @@ Base :
 # All the classification-realted configuration options
 Classification:
   multiclass_method: "oneVersusOne"
-  split: 0.2
-  nb_folds: 2
+  split: 0.5
+  nb_folds: 5
   nb_class: 2
   classes:
-  type: ["multiview",]
-  algos_monoview: ["all"]
-  algos_multiview: ["mvml",]
-  stats_iter: 2
+  type: ["multiview"]
+  algos_monoview: ["random_forest"]
+  algos_multiview: ["mucombo"]
+  stats_iter: 1
   metrics: ["accuracy_score", "f1_score"]
   metric_princ: "f1_score"
   hps_type: "randomized_search"
