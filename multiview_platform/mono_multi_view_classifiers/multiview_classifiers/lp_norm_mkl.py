@@ -1,5 +1,5 @@
 
-from metriclearning.lpMKL import MKL
+from multimodal.kernels.lpMKL import MKL
 
 from ..multiview.multiview_utils import BaseMultiviewClassifier, FakeEstimator
 from .additions.kernel_learning import KernelClassifier, KernelConfigGenerator, KernelGenerator

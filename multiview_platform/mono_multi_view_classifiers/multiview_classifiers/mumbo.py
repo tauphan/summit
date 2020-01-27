@@ -1,7 +1,7 @@
 from sklearn.tree import DecisionTreeClassifier
 
 
-from multimodalboost.mumbo import MumboClassifier
+from multimodal.boosting.mumbo import MumboClassifier
 from ..multiview.multiview_utils import BaseMultiviewClassifier, \
                                         get_examples_views_indices
 from ..utils.hyper_parameter_search import CustomRandint

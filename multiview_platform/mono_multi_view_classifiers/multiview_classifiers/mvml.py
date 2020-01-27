@@ -1,5 +1,5 @@
 
-from metriclearning.mvml import MVML
+from multimodal.kernels.mvml import MVML
 
 from ..multiview.multiview_utils import BaseMultiviewClassifier, FakeEstimator
 from .additions.kernel_learning import KernelClassifier, KernelConfigGenerator, KernelGenerator
@@ -13,7 +13,7 @@ class MVMLClassifier(KernelClassifier, MVML):
                  precision=0.0001, learn_A=0, kernel="rbf", learn_w=0,
                  kernel_params=None):
         super().__init__(random_state)
-        super(BaseMultiviewClassifier, self).__init__(lmbda=0.1, eta=0.1,  nystrom_param=nystrom_param,
+        super(BaseMultiviewClassifier, self).__init__(lmbda=lmbda, eta=eta,  nystrom_param=nystrom_param,
                                                       kernel=kernel,
                                                       n_loops=n_loops,
                                                       precision=precision,
