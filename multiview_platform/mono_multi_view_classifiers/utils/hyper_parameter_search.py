@@ -3,6 +3,7 @@ import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
+import traceback
 from scipy.stats import randint, uniform
 from sklearn.model_selection import RandomizedSearchCV
 
@@ -192,29 +193,37 @@ class MultiviewCompatibleRandomizedSearchCV(RandomizedSearchCV):
         results = {}
         self.cv_results_ = dict(("param_"+param_name, []) for param_name in candidate_params[0].keys())
         self.cv_results_["mean_test_score"] = []
+        n_failed = 0
+        tracebacks = []
         for candidate_param_idx, candidate_param in enumerate(candidate_params):
             test_scores = np.zeros(n_splits)+1000
-            for fold_idx, (train_indices, test_indices) in enumerate(folds):
-                current_estimator = clone(base_estimator)
-                current_estimator.set_params(**candidate_param)
-                current_estimator.fit(X, y,
-                                      train_indices=self.available_indices[train_indices],
-                                      view_indices=self.view_indices)
-                test_prediction = current_estimator.predict(
-                    X,
-                    self.available_indices[test_indices],
-                    view_indices=self.view_indices)
-                test_score = self.scoring._score_func(y[self.available_indices[test_indices]],
-                                                      test_prediction)
-                test_scores[fold_idx] = test_score
-            for param_name, param in candidate_param.items():
-                self.cv_results_["param_"+param_name].append(param)
-            cross_validation_score = np.mean(test_scores)
-            self.cv_results_["mean_test_score"].append(cross_validation_score)
-            results[candidate_param_idx] = cross_validation_score
-            if cross_validation_score <= min(results.values()):
-                self.best_params_ = candidate_params[candidate_param_idx]
-                self.best_score_ = cross_validation_score
+            try:
+                for fold_idx, (train_indices, test_indices) in enumerate(folds):
+                    current_estimator = clone(base_estimator)
+                    current_estimator.set_params(**candidate_param)
+                    current_estimator = current_estimator.fit(X, y,
+                                          train_indices=self.available_indices[train_indices],
+                                          view_indices=self.view_indices)
+                    test_prediction = current_estimator.predict(
+                        X,
+                        self.available_indices[test_indices],
+                        view_indices=self.view_indices)
+                    test_score = self.scoring._score_func(y[self.available_indices[test_indices]],
+                                                              test_prediction)
+                    test_scores[fold_idx] = test_score
+                for param_name, param in candidate_param.items():
+                    self.cv_results_["param_"+param_name].append(param)
+                cross_validation_score = np.mean(test_scores)
+                self.cv_results_["mean_test_score"].append(cross_validation_score)
+                results[candidate_param_idx] = cross_validation_score
+                if cross_validation_score <= min(results.values()):
+                    self.best_params_ = candidate_params[candidate_param_idx]
+                    self.best_score_ = cross_validation_score
+            except:
+                n_failed+=1
+                tracebacks.append(traceback.format_exc())
+        if n_failed == self.n_iter:
+            raise ValueError ('No fits were performed. All HP combination returned errors \n\n'+ '\n'.join(tracebacks))
         if self.refit:
             self.best_estimator_ = clone(base_estimator).set_params(**self.best_params_)
             self.best_estimator_.fit(X, y, **fit_params)
