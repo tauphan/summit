@@ -196,8 +196,6 @@ class MultiviewCompatibleRandomizedSearchCV(RandomizedSearchCV):
         results = {}
         self.cv_results_ = dict(("param_"+param_name, []) for param_name in candidate_params[0].keys())
         self.cv_results_["mean_test_score"] = []
-        n_failed = 0
-        tracebacks = []
         for candidate_param_idx, candidate_param in enumerate(candidate_params):
             test_scores = np.zeros(n_splits)+1000
             for fold_idx, (train_indices, test_indices) in enumerate(folds):
@@ -210,6 +208,7 @@ class MultiviewCompatibleRandomizedSearchCV(RandomizedSearchCV):
                     X,
                     self.available_indices[test_indices],
                     view_indices=self.view_indices)
+                print(current_estimator)
                 test_score = self.scoring._score_func(y[self.available_indices[test_indices]],
                                                       test_prediction,
                                                      **self.scoring._kwargs)

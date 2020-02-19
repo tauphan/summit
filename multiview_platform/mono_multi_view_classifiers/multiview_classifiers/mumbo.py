@@ -2,9 +2,9 @@ from sklearn.tree import DecisionTreeClassifier
 import numpy as np
 
 from multimodal.boosting.mumbo import MumboClassifier
-from ..multiview.multiview_utils import BaseMultiviewClassifier, \
-                                        get_examples_views_indices
+from ..multiview.multiview_utils import BaseMultiviewClassifier
 from ..utils.hyper_parameter_search import CustomRandint
+from ..utils.dataset import get_examples_views_indices
 
 classifier_class_name = "Mumbo"
 
@@ -29,7 +29,7 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
                                                                  view_indices)
         numpy_X, view_limits = X.to_numpy_array(example_indices=train_indices,
                                                 view_indices=view_indices)
-        return super(Mumbo, self).fit(numpy_X, y[train_indices],
+        return super(BaseMultiviewClassifier, self).fit(numpy_X, y[train_indices],
                                                 view_limits)
 
     def predict(self, X, example_indices=None, view_indices=None):
@@ -38,8 +38,8 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
                                                                  view_indices)
         numpy_X, view_limits = X.to_numpy_array(example_indices=example_indices,
                                                 view_indices=view_indices)
-        return super(Mumbo, self).predict(numpy_X)
+        return super(BaseMultiviewClassifier, self).predict(numpy_X)
 
-    def get_interpretation(self):
+    def get_interpretation(self, directory, labels, multiclass=False):
         intepret_string = "Mumbo used "+str(len(self.best_views_)) +" iterations to converge, selecting views : \n" + ", ".join(map(str, self.best_views_)) + "\n\n With estimator weights : \n"+ "\n".join(map(str,self.estimator_weights_/np.sum(self.estimator_weights_)))
         return intepret_string

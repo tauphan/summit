@@ -1,9 +1,10 @@
 from sklearn.metrics import pairwise
 import numpy as np
 
-from ...multiview.multiview_utils import BaseMultiviewClassifier, get_examples_views_indices
+from ...multiview.multiview_utils import BaseMultiviewClassifier
 from ...utils.hyper_parameter_search import CustomUniform, CustomRandint
 from ...utils.transformations import sign_labels, unsign_labels
+from ...utils.dataset import get_examples_views_indices
 
 class KernelClassifier(BaseMultiviewClassifier):
 
@@ -29,6 +30,7 @@ class KernelClassifier(BaseMultiviewClassifier):
         return formatted_X, example_indices
 
     def extract_labels(self, predicted_labels):
+        print(predicted_labels)
         signed_labels = np.sign(predicted_labels)
         return unsign_labels(signed_labels)
 
