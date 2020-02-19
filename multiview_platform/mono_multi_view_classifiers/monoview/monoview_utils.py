@@ -1,6 +1,7 @@
 import pickle
 
 import matplotlib.pyplot as plt
+from abc import abstractmethod
 import numpy as np
 from matplotlib.ticker import FuncFormatter
 from scipy.stats import uniform, randint
@@ -8,7 +9,7 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import RandomizedSearchCV
 
 from .. import metrics
-from ..utils import hyper_parameter_search
+from ..utils.base import BaseClassifier
 
 # Author-Info
 __author__ = "Nikolas Huelsmann, Baptiste Bauvin"
@@ -114,51 +115,13 @@ class CustomUniform:
             return unif
 
 
-class BaseMonoviewClassifier(BaseEstimator, ):#ClassifierMixin):
+class BaseMonoviewClassifier(BaseClassifier):#ClassifierMixin):
 
-    def genBestParams(self, detector):
-        return dict(
-            (param_name, detector.best_params_[param_name]) for param_name in
-            self.param_names)
-
-    def genParamsFromDetector(self, detector):
-        if self.classed_params:
-            classed_dict = dict((classed_param, get_names(
-                detector.cv_results_["param_" + classed_param]))
-                                for classed_param in self.classed_params)
-        if self.param_names:
-            return [(param_name,
-                     np.array(detector.cv_results_["param_" + param_name]))
-                    if param_name not in self.classed_params else (
-            param_name, classed_dict[param_name])
-                    for param_name in self.param_names]
-        else:
-            return [()]
-
-    def genDistribs(self):
-        return dict((param_name, distrib) for param_name, distrib in
-                    zip(self.param_names, self.distribs))
-
-    def params_to_string(self):
-        return ", ".join(
-                [param_name + " : " + self.to_str(param_name) for param_name in
-                 self.param_names])
-
-    def getConfig(self):
+    def get_config(self):
         if self.param_names:
             return "\n\t\t- " + self.__class__.__name__ + "with " + self.params_to_string()
         else:
             return "\n\t\t- " + self.__class__.__name__ + "with no config."
-
-    def to_str(self, param_name):
-        if param_name in self.weird_strings:
-            if self.weird_strings[param_name] == "class_name":
-                return self.get_params()[param_name].__class__.__name__
-            else:
-                return self.weird_strings[param_name](
-                    self.get_params()[param_name])
-        else:
-            return str(self.get_params()[param_name])
 
     def get_feature_importance(self, directory, nb_considered_feats=50):
         """Used to generate a graph and a pickle dictionary representing feature importances"""
@@ -193,13 +156,6 @@ class BaseMonoviewClassifier(BaseEstimator, ):#ClassifierMixin):
     def get_name_for_fusion(self):
         return self.__class__.__name__[:4]
 
-    def getInterpret(self, directory, y_test):
-        return ""
-
-
-def get_names(classed_list):
-    return np.array([object_.__class__.__name__ for object_ in classed_list])
-
 
 def percent(x, pos):
     """Used to print percentage of importance on the y axis"""
@@ -208,15 +164,13 @@ def percent(x, pos):
 
 class MonoviewResult(object):
     def __init__(self, view_index, classifier_name, view_name, metrics_scores,
-                 full_labels_pred,
-                 classifier_config, y_test_multiclass_pred, test_folds_preds, classifier, n_features):
+                 full_labels_pred, classifier_config, test_folds_preds, classifier, n_features):
         self.view_index = view_index
         self.classifier_name = classifier_name
         self.view_name = view_name
         self.metrics_scores = metrics_scores
         self.full_labels_pred = full_labels_pred
         self.classifier_config = classifier_config
-        self.y_test_multiclass_pred = y_test_multiclass_pred
         self.test_folds_preds = test_folds_preds
         self.clf = classifier
         self.n_features = n_features
@@ -250,6 +204,8 @@ def get_accuracy_graph(plotted_data, classifier_name, file_name,
         ax.legend((scat,), (name,))
     f.savefig(file_name, transparent=True)
     plt.close()
+
+
 
 # def isUseful(labelSupports, index, CLASS_LABELS, labelDict):
 #     if labelSupports[labelDict[CLASS_LABELS[index]]] != 0:

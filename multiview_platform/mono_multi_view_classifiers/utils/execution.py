@@ -156,7 +156,7 @@ def init_log_file(name, views, cl_type, log, debug, label,
     result_directory = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))), result_directory)
     if debug:
         result_directory = os.path.join(result_directory, name, noise_string,
-                           "debug_started_" + time.strftime("%Y_%m_%d-%H_%M_%S") + "_" + label)
+                                        "debug_started_" + time.strftime("%Y_%m_%d-%H_%M_%S") + "_" + label)
     else:
         result_directory = os.path.join(result_directory, name,  noise_string,
                                         "started_" + time.strftime("%Y_%m_%d-%H_%M") + "_" + label)
@@ -321,17 +321,20 @@ def find_dataset_names(path, type, names):
     if names == ["all"]:
         return available_file_names
     elif len(names)>1:
+        selected_names = [used_name for used_name in available_file_names if used_name in names]
+        if not selected_names:
+            raise ValueError("None of the provided dataset names are available. Available datasets are {}".format(available_file_names))
         return [used_name for used_name in available_file_names if used_name in names]
     else:
         return names
 
 
-def gen_argument_dictionaries(labels_dictionary, directories, multiclass_labels,
-                              labels_combinations, indices_multiclass,
+def gen_argument_dictionaries(labels_dictionary, directories,
+                              splits,
                               hyper_param_search, args, k_folds,
                               stats_iter_random_states, metrics,
                               argument_dictionaries,
-                              benchmark, nb_views, views, views_indices):
+                              benchmark, views, views_indices):
     r"""Used to generate a dictionary for each benchmark.
 
     One for each label combination (if multiclass), for each statistical iteration, generates an dictionary with
@@ -379,30 +382,20 @@ def gen_argument_dictionaries(labels_dictionary, directories, multiclass_labels,
 
     """
     benchmark_argument_dictionaries = []
-    for combination_index, labels_combination in enumerate(labels_combinations):
-        for iter_index, iterRandomState in enumerate(stats_iter_random_states):
-            benchmark_argument_dictionary = {
-                "labels_dictionary": {0: labels_dictionary[labels_combination[0]],
-                                      1: labels_dictionary[
-                                          labels_combination[1]]},
-                "directory": os.path.join(directories[iter_index],
-                             labels_dictionary[labels_combination[0]] +
-                             "-vs-" +
-                             labels_dictionary[labels_combination[1]]),
-                "classification_indices": [
-                    indices_multiclass[combination_index][0][iter_index],
-                    indices_multiclass[combination_index][1][iter_index],
-                    indices_multiclass[combination_index][2][iter_index]],
-                "args": args,
-                "labels": multiclass_labels[combination_index],
-                "k_folds": k_folds[iter_index],
-                "random_state": iterRandomState,
-                "hyper_param_search": hyper_param_search,
-                "metrics": metrics,
-                "argument_dictionaries": argument_dictionaries,
-                "benchmark": benchmark,
-                "views": views,
-                "views_indices": views_indices,
-                "flag": [iter_index, labels_combination]}
-            benchmark_argument_dictionaries.append(benchmark_argument_dictionary)
+    for iter_index, iterRandomState in enumerate(stats_iter_random_states):
+        benchmark_argument_dictionary = {
+            "labels_dictionary": labels_dictionary,
+            "directory": directories[iter_index],
+            "classification_indices": splits[iter_index],
+            "args": args,
+            "k_folds": k_folds[iter_index],
+            "random_state": iterRandomState,
+            "hyper_param_search": hyper_param_search,
+            "metrics": metrics,
+            "argument_dictionaries": argument_dictionaries,
+            "benchmark": benchmark,
+            "views": views,
+            "views_indices": views_indices,
+            "flag": iter_index}
+        benchmark_argument_dictionaries.append(benchmark_argument_dictionary)
     return benchmark_argument_dictionaries

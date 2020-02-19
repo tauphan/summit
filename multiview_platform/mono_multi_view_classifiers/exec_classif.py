@@ -18,7 +18,7 @@ from . import multiview_classifiers
 from .multiview.exec_multiview import exec_multiview, exec_multiview_multicore
 from .monoview.exec_classif_mono_view import exec_monoview, exec_monoview_multicore
 from .utils.dataset import delete_HDF5
-from .result_analysis import get_results, plot_results_noise, analyze_biclass
+from .result_analysis import get_results, plot_results_noise, analyze_iterations
 from .utils import execution, dataset, multiclass, configuration
 
 matplotlib.use(
@@ -106,7 +106,6 @@ def init_multiview_exps(classifier_names, views_dictionary, nb_class, kwargs_ini
                                                                   views_dictionary=views_dictionary,
                                                                   framework="multiview")
         else:
-            print(classifier_name)
             arguments = get_path_dict(kwargs_init[classifier_name])
             multiview_arguments += [gen_single_multiview_arg_dictionary(classifier_name,
                                                                         arguments,
@@ -479,7 +478,7 @@ def arange_metrics(metrics, metric_princ):
 
 
 def benchmark_init(directory, classification_indices, labels, labels_dictionary,
-                   k_folds):
+                   k_folds, dataset_var):
     """
     Initializes the benchmark, by saving the indices of the train
     examples and the cross validation folds.
@@ -513,7 +512,7 @@ def benchmark_init(directory, classification_indices, labels, labels_dictionary,
             if exc.errno != errno.EEXIST:
                 raise
     train_indices = classification_indices[0]
-    train_labels = labels[train_indices]
+    train_labels = dataset_var.get_labels(example_indices=train_indices)
     np.savetxt(os.path.join(directory, "train_labels.csv"), train_labels, delimiter=",")
     np.savetxt(os.path.join(directory, "train_indices.csv"), classification_indices[0],
                delimiter=",")
@@ -553,24 +552,24 @@ def benchmark_init(directory, classification_indices, labels, labels_dictionary,
 #
 #     logging.debug("Start:\t monoview benchmark")
 #     results_monoview += [
-#         exec_monoview_multicore(directory, args["Base"]["name"], labels_names,
+#         exec_monoview_multicore(directory, args["name"], labels_names,
 #                                classification_indices, k_folds,
-#                                core_index, args["Base"]["type"], args["Base"]["pathf"], random_state,
+#                                core_index, args["file_type"], args["pathf"], random_state,
 #                                labels,
 #                                hyper_param_search=hyper_param_search,
 #                                metrics=metrics,
-#                                n_iter=args["Classification"]["hps_iter"], **argument)
+#                                n_iter=args["hps_iter"], **argument)
 #         for argument in argument_dictionaries["Monoview"]]
 #     logging.debug("Done:\t monoview benchmark")
 #
 #
 #     logging.debug("Start:\t multiview benchmark")
 #     results_multiview = [
-#         exec_multiview_multicore(directory, core_index, args["Base"]["name"],
-#                                 classification_indices, k_folds, args["Base"]["type"],
-#                                 args["Base"]["pathf"], labels_dictionary, random_state,
+#         exec_multiview_multicore(directory, core_index, args["name"],
+#                                 classification_indices, k_folds, args["file_type"],
+#                                 args["pathf"], labels_dictionary, random_state,
 #                                 labels, hyper_param_search=hyper_param_search,
-#                                 metrics=metrics, n_iter=args["Classification"]["hps_iter"],
+#                                 metrics=metrics, n_iter=args["hps_iter"],
 #                                 **arguments)
 #         for arguments in argument_dictionaries["multiview"]]
 #     logging.debug("Done:\t multiview benchmark")
@@ -600,13 +599,13 @@ def benchmark_init(directory, classification_indices, labels, labels_dictionary,
 #     nb_multicore_to_do = int(math.ceil(float(nb_experiments) / nb_cores))
 #     for step_index in range(nb_multicore_to_do):
 #         results_monoview += (Parallel(n_jobs=nb_cores)(
-#             delayed(exec_monoview_multicore)(directory, args["Base"]["name"], labels_names,
+#             delayed(exec_monoview_multicore)(directory, args["name"], labels_names,
 #                                             classification_indices, k_folds,
-#                                             core_index, args["Base"]["type"], args["Base"]["pathf"],
+#                                             core_index, args["file_type"], args["pathf"],
 #                                             random_state, labels,
 #                                             hyper_param_search=hyper_param_search,
 #                                             metrics=metrics,
-#                                             n_iter=args["Classification"]["hps_iter"],
+#                                             n_iter=args["hps_iter"],
 #                                             **argument_dictionaries["monoview"][
 #                                             core_index + step_index * nb_cores])
 #             for core_index in
@@ -628,14 +627,14 @@ def benchmark_init(directory, classification_indices, labels, labels_dictionary,
 #     nb_multicore_to_do = int(math.ceil(float(nb_experiments) / nb_cores))
 #     for step_index in range(nb_multicore_to_do):
 #         results_multiview += Parallel(n_jobs=nb_cores)(
-#             delayed(exec_multiview_multicore)(directory, core_index, args["Base"]["name"],
+#             delayed(exec_multiview_multicore)(directory, core_index, args["name"],
 #                                               classification_indices, k_folds,
-#                                               args["Base"]["type"], args["Base"]["pathf"],
+#                                               args["file_type"], args["Base"]["pathf"],
 #                                               labels_dictionary, random_state,
 #                                               labels,
 #                                               hyper_param_search=hyper_param_search,
 #                                               metrics=metrics,
-#                                               n_iter=args["Classification"]["hps_iter"],
+#                                               n_iter=args["hps_iter"],
 #                                               **
 #                                              argument_dictionaries["multiview"][
 #                                                  step_index * nb_cores + core_index])
@@ -653,25 +652,28 @@ def exec_one_benchmark_mono_core(dataset_var=None, labels_dictionary=None,
                                  hyper_param_search=None, metrics=None,
                                  argument_dictionaries=None,
                                  benchmark=None, views=None, views_indices=None,
-                                 flag=None, labels=None,):
+                                 flag=None, labels=None, track_tracebacks=False):
     results_monoview, labels_names = benchmark_init(directory,
                                                  classification_indices, labels,
-                                                 labels_dictionary, k_folds)
+                                                 labels_dictionary, k_folds, dataset_var)
     logging.getLogger('matplotlib.font_manager').disabled = True
     logging.debug("Start:\t monoview benchmark")
     traceback_outputs = {}
     for arguments in argument_dictionaries["monoview"]:
         try:
             X = dataset_var.get_v(arguments["view_index"])
-            Y = labels
+            Y = dataset_var.get_labels()
             results_monoview += [
-                exec_monoview(directory, X, Y, args["Base"]["name"], labels_names,
+                exec_monoview(directory, X, Y, args["name"], labels_names,
                               classification_indices, k_folds,
-                              1, args["Base"]["type"], args["Base"]["pathf"], random_state,
+                              1, args["file_type"], args["pathf"], random_state,
                               hyper_param_search=hyper_param_search, metrics=metrics,
-                              n_iter=args["Classification"]["hps_iter"], **arguments)]
+                              n_iter=args["hps_iter"], **arguments)]
         except:
-            traceback_outputs[arguments["classifier_name"]+"-"+arguments["view_name"]] = traceback.format_exc()
+            if track_tracebacks:
+                traceback_outputs[arguments["classifier_name"]+"-"+arguments["view_name"]] = traceback.format_exc()
+            else:
+                raise
 
     logging.debug("Done:\t monoview benchmark")
 
@@ -690,27 +692,27 @@ def exec_one_benchmark_mono_core(dataset_var=None, labels_dictionary=None,
     for arguments in argument_dictionaries["multiview"]:
         try:
             results_multiview += [
-                exec_multiview(directory, dataset_var, args["Base"]["name"], classification_indices,
-                              k_folds, 1, args["Base"]["type"],
-                              args["Base"]["pathf"], labels_dictionary, random_state, labels,
+                exec_multiview(directory, dataset_var, args["name"], classification_indices,
+                              k_folds, 1, args["file_type"],
+                              args["pathf"], labels_dictionary, random_state, labels,
                               hyper_param_search=hyper_param_search,
-                              metrics=metrics, n_iter=args["Classification"]["hps_iter"], **arguments)]
+                              metrics=metrics, n_iter=args["hps_iter"], **arguments)]
         except:
-            traceback_outputs[arguments["classifier_name"]] = traceback.format_exc()
+            if track_tracebacks:
+                traceback_outputs[arguments["classifier_name"]] = traceback.format_exc()
+            else:
+                raise
     logging.debug("Done:\t multiview benchmark")
 
     return [flag, results_monoview + results_multiview, traceback_outputs]
 
 
-def exec_benchmark(nb_cores, stats_iter, nb_multiclass,
-                   benchmark_arguments_dictionaries, classification_indices,
-                   directories,
-                   directory, multi_class_labels, metrics, labels_dictionary,
-                   nb_labels, dataset_var,
-                   # exec_one_benchmark=exec_one_benchmark,
-                   # exec_one_benchmark_multicore=exec_one_benchmark_multicore,
+def exec_benchmark(nb_cores, stats_iter,
+                   benchmark_arguments_dictionaries,
+                   directory,  metrics, dataset_var, track_tracebacks,
                    exec_one_benchmark_mono_core=exec_one_benchmark_mono_core,
-                   get_results=get_results, delete=delete_HDF5):
+                   get_results=get_results, delete=delete_HDF5,
+                   analyze_iterations=analyze_iterations):
     r"""Used to execute the needed benchmark(s) on multicore or mono-core functions.
 
     Parameters
@@ -770,27 +772,21 @@ def exec_benchmark(nb_cores, stats_iter, nb_multiclass,
     #         benchmark_arguments_dictionaries[0])]
     # else:
     for arguments in benchmark_arguments_dictionaries:
-        benchmark_results = exec_one_benchmark_mono_core(dataset_var=dataset_var, **arguments)
-        analyze_biclass([benchmark_results], benchmark_arguments_dictionaries, stats_iter, metrics, example_ids=dataset_var.example_ids)
+        benchmark_results = exec_one_benchmark_mono_core(dataset_var=dataset_var,
+                                                         track_tracebacks=track_tracebacks,
+                                                         **arguments)
+        analyze_iterations([benchmark_results], benchmark_arguments_dictionaries, stats_iter, metrics, example_ids=dataset_var.example_ids, labels=dataset_var.get_labels())
         results += [benchmark_results]
     logging.debug("Done:\t Executing all the needed biclass benchmarks")
 
     # Do everything with flagging
-    nb_examples = len(classification_indices[0][0]) + len(
-        classification_indices[0][1])
-    multiclass_ground_truth = dataset_var.get_labels()
     logging.debug("Start:\t Analyzing predictions")
-    results_mean_stds = get_results(results, stats_iter, nb_multiclass,
+    results_mean_stds = get_results(results, stats_iter,
                                     benchmark_arguments_dictionaries,
-                                    multiclass_ground_truth,
                                     metrics,
-                                    classification_indices,
-                                    directories,
                                     directory,
-                                    labels_dictionary,
-                                    nb_examples,
-                                    nb_labels,
-                                    dataset_var.example_ids)
+                                    dataset_var.example_ids,
+                                    dataset_var.get_labels())
     logging.debug("Done:\t Analyzing predictions")
     delete(benchmark_arguments_dictionaries, nb_cores, dataset_var)
     return results_mean_stds
@@ -814,63 +810,62 @@ def exec_classif(arguments):
     start = time.time()
     args = execution.parse_the_args(arguments)
     args = configuration.get_the_args(args.config_path)
-    os.nice(args["Base"]["nice"])
-    nb_cores = args["Base"]["nb_cores"]
+    os.nice(args["nice"])
+    nb_cores = args["nb_cores"]
     if nb_cores == 1:
         os.environ['OPENBLAS_NUM_THREADS'] = '1'
-    stats_iter = args["Classification"]["stats_iter"]
-    hyper_param_search = args["Classification"]["hps_type"]
-    multiclass_method = args["Classification"]["multiclass_method"]
-    cl_type = args["Classification"]["type"]
-    monoview_algos = args["Classification"]["algos_monoview"]
-    multiview_algos = args["Classification"]["algos_multiview"]
-    dataset_list = execution.find_dataset_names(args["Base"]["pathf"],
-                                                args["Base"]["type"],
-                                                args["Base"]["name"])
-    if not args["Base"]["add_noise"]:
-        args["Base"]["noise_std"]=[0.0]
-
+    stats_iter = args["stats_iter"]
+    hyper_param_search = args["hps_type"]
+    cl_type = args["type"]
+    monoview_algos = args["algos_monoview"]
+    multiview_algos = args["algos_multiview"]
+    dataset_list = execution.find_dataset_names(args["pathf"],
+                                                args["file_type"],
+                                                args["name"])
+    if not args["add_noise"]:
+        args["noise_std"]=[0.0]
     for dataset_name in dataset_list:
         noise_results = []
-        for noise_std in args["Base"]["noise_std"]:
+        for noise_std in args["noise_std"]:
 
-            directory = execution.init_log_file(dataset_name, args["Base"]["views"], args["Classification"]["type"],
-                                              args["Base"]["log"], args["Base"]["debug"], args["Base"]["label"],
-                                              args["Base"]["res_dir"], args["Base"]["add_noise"], noise_std, args)
-            random_state = execution.init_random_state(args["Base"]["random_state"], directory)
+            directory = execution.init_log_file(dataset_name, args["views"], args["file_type"],
+                                              args["log"], args["debug"], args["label"],
+                                              args["res_dir"], args["add_noise"], noise_std, args)
+
+            random_state = execution.init_random_state(args["random_state"], directory)
             stats_iter_random_states = execution.init_stats_iter_random_states(stats_iter,
                                                                         random_state)
 
-            get_database = execution.get_database_function(dataset_name, args["Base"]["type"])
+            get_database = execution.get_database_function(dataset_name, args["file_type"])
 
-            dataset_var, labels_dictionary, datasetname = get_database(args["Base"]["views"],
-                                                                  args["Base"]["pathf"], dataset_name,
-                                                                  args["Classification"]["nb_class"],
-                                                                  args["Classification"]["classes"],
+            dataset_var, labels_dictionary, datasetname = get_database(args["views"],
+                                                                  args["pathf"], dataset_name,
+                                                                  args["nb_class"],
+                                                                  args["classes"],
                                                                   random_state,
-                                                                  args["Base"]["full"],
-                                                                  args["Base"]["add_noise"],
+                                                                  args["full"],
+                                                                  args["add_noise"],
                                                                   noise_std)
-            args["Base"]["name"] = datasetname
+            args["name"] = datasetname
 
-            splits = execution.gen_splits(dataset_var.get_labels(), args["Classification"]["split"],
+            splits = execution.gen_splits(dataset_var.get_labels(), args["split"],
                                          stats_iter_random_states)
 
-            multiclass_labels, labels_combinations, indices_multiclass = multiclass.gen_multiclass_labels(
-                dataset_var.get_labels(), multiclass_method, splits)
+            # multiclass_labels, labels_combinations, indices_multiclass = multiclass.gen_multiclass_labels(
+            #     dataset_var.get_labels(), multiclass_method, splits)
 
-            k_folds = execution.gen_k_folds(stats_iter, args["Classification"]["nb_folds"],
+            k_folds = execution.gen_k_folds(stats_iter, args["nb_folds"],
                                          stats_iter_random_states)
 
-            dataset_files = dataset.init_multiple_datasets(args["Base"]["pathf"], args["Base"]["name"], nb_cores)
+            dataset_files = dataset.init_multiple_datasets(args["pathf"], args["name"], nb_cores)
 
 
-            views, views_indices, all_views = execution.init_views(dataset_var, args["Base"]["views"])
+            views, views_indices, all_views = execution.init_views(dataset_var, args["views"])
             views_dictionary = dataset_var.get_view_dict()
             nb_views = len(views)
             nb_class = dataset_var.get_nb_class()
 
-            metrics = [metric.split(":") for metric in args["Classification"]["metrics"]]
+            metrics = [metric.split(":") for metric in args["metrics"]]
             if metrics == [["all"]]:
                 metrics_names = [name for _, name, isPackage
                                 in pkgutil.iter_modules(
@@ -879,7 +874,7 @@ def exec_classif(arguments):
                                                                "matthews_corrcoef",
                                                                "roc_auc_score"]]
                 metrics = [[metricName] for metricName in metrics_names]
-            metrics = arange_metrics(metrics, args["Classification"]["metric_princ"])
+            metrics = arange_metrics(metrics, args["metric_princ"])
             for metricIndex, metric in enumerate(metrics):
                 if len(metric) == 1:
                     metrics[metricIndex] = [metric[0], None]
@@ -894,18 +889,16 @@ def exec_classif(arguments):
             #                                         NB_CLASS, initKWARGS)
             directories = execution.gen_direcorties_names(directory, stats_iter)
             benchmark_argument_dictionaries = execution.gen_argument_dictionaries(
-                labels_dictionary, directories, multiclass_labels,
-                labels_combinations, indices_multiclass,
+                labels_dictionary, directories,
+                splits,
                 hyper_param_search, args, k_folds,
                 stats_iter_random_states, metrics,
-                argument_dictionaries, benchmark, nb_views,
-                views, views_indices)
-            nb_multiclass = len(labels_combinations)
+                argument_dictionaries, benchmark,
+                views, views_indices,)
             results_mean_stds = exec_benchmark(
-                nb_cores, stats_iter, nb_multiclass,
-                benchmark_argument_dictionaries, splits, directories,
-                directory, multiclass_labels, metrics, labels_dictionary,
-                nb_class, dataset_var)
+                nb_cores, stats_iter,
+                benchmark_argument_dictionaries, directory, metrics, dataset_var,
+                args["track_tracebacks"])
             noise_results.append([noise_std, results_mean_stds])
             plot_results_noise(directory, noise_results, metrics[0][0], dataset_name)
 

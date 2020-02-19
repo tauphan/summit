@@ -65,7 +65,7 @@ class SGD(SGDClassifier, BaseMonoviewClassifier):
     #
     #     return True
 
-    def getInterpret(self, directory, y_test):
+    def get_interpretation(self, directory, y_test):
         """
 
         Parameters
