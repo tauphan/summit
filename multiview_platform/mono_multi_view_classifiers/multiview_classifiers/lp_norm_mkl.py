@@ -23,7 +23,6 @@ class LPNormMKL(KernelClassifier, MKL):
         self.distribs = [CustomUniform(), ['rbf', 'additive_chi2', 'poly' ],
                          KernelConfigGenerator()]
 
-
     def fit(self, X, y, train_indices=None, view_indices=None):
         formatted_X, train_indices = self.format_X(X, train_indices, view_indices)
         try:
@@ -31,11 +30,12 @@ class LPNormMKL(KernelClassifier, MKL):
         except:
             return FakeEstimator()
 
-        return super(LPNormMKL, self).fit(formatted_X, y[train_indices])
+        return super(BaseMultiviewClassifier, self).fit(formatted_X, y[train_indices])
 
     def predict(self, X, example_indices=None, view_indices=None):
         new_X, _ = self.format_X(X, example_indices, view_indices)
-        return self.extract_labels(super(LPNormMKL, self).predict(new_X))
+        print(super(BaseMultiviewClassifier, self).predict(new_X))
+        return self.extract_labels(super(BaseMultiviewClassifier, self).predict(new_X))
 
 
 

@@ -11,14 +11,14 @@ class KernelClassifier(BaseMultiviewClassifier):
     def __init__(self, random_state=None,):
         super().__init__(random_state)
 
-    def _compute_kernels(self, X, example_indices, view_indices, ):
-        new_X = {}
-        for index, (kernel_function, kernel_config, view_index) in enumerate(
-                zip(self.kernel_functions, self.kernel_configs, view_indices)):
-            new_X[index] = kernel_function(X.get_v(view_index,
-                                                   example_indices),
-                                           **kernel_config)
-        return new_X
+    # def _compute_kernels(self, X, example_indices, view_indices, ):
+    #     new_X = {}
+    #     for index, (kernel_function, kernel_config, view_index) in enumerate(
+    #             zip(self.kernel_functions, self.kernel_configs, view_indices)):
+    #         new_X[index] = kernel_function(X.get_v(view_index,
+    #                                                example_indices),
+    #                                        **kernel_config)
+    #     return new_X
 
     def format_X(self, X, example_indices, view_indices):
         example_indices, view_indices = get_examples_views_indices(X,
@@ -30,7 +30,6 @@ class KernelClassifier(BaseMultiviewClassifier):
         return formatted_X, example_indices
 
     def extract_labels(self, predicted_labels):
-        print(predicted_labels)
         signed_labels = np.sign(predicted_labels)
         return unsign_labels(signed_labels)
 

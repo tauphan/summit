@@ -8,8 +8,11 @@ from ..utils.hyper_parameter_search import CustomUniform, CustomRandint
 
 classifier_class_name = "MVMLClassifier"
 
+
 class MVMLClassifier(KernelClassifier, MVML):
-    def __init__(self, random_state=None, lmbda=0.1, eta=0.1, nystrom_param=1, n_loops=50,
+
+    def __init__(self, random_state=None, lmbda=0.1, eta=0.1, nystrom_param=1,
+                 n_loops=50,
                  precision=0.0001, learn_A=0, kernel="rbf", learn_w=0,
                  kernel_params=None):
         super().__init__(random_state)
@@ -40,11 +43,11 @@ class MVMLClassifier(KernelClassifier, MVML):
             self.init_kernels(nb_view=len(formatted_X))
         except:
             return FakeEstimator()
-        return super(MVMLClassifier, self).fit(formatted_X, y[train_indices])
+        return super(BaseMultiviewClassifier, self).fit(formatted_X, y[train_indices])
 
     def predict(self, X, example_indices=None, view_indices=None):
         new_X, _ = self.format_X(X, example_indices, view_indices)
-        return self.extract_labels(super(MVMLClassifier, self).predict(new_X))
+        return self.extract_labels(super(BaseMultiviewClassifier, self).predict(new_X))
 
 
 # class MVML(BaseEstimator, ClassifierMixin):

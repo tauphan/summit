@@ -70,7 +70,7 @@ class SCM(scm, BaseMonoviewClassifier):
     #     """
     #     return False
 
-    def getInterpret(self, directory, y_test):
+    def get_interpretation(self, directory, y_test, multi_class=False):
         interpretString = "Model used : " + str(self.model_)
         return interpretString
 
