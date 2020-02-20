@@ -25,16 +25,15 @@ class LPNormMKL(KernelClassifier, MKL):
 
     def fit(self, X, y, train_indices=None, view_indices=None):
         formatted_X, train_indices = self.format_X(X, train_indices, view_indices)
-        try:
-            self.init_kernels(nb_view=len(formatted_X))
-        except:
-            return FakeEstimator()
+        # try:
+        self.init_kernels(nb_view=len(formatted_X))
+        # except:
+        #     return FakeEstimator()
 
         return super(BaseMultiviewClassifier, self).fit(formatted_X, y[train_indices])
 
     def predict(self, X, example_indices=None, view_indices=None):
         new_X, _ = self.format_X(X, example_indices, view_indices)
-        print(super(BaseMultiviewClassifier, self).predict(new_X))
         return self.extract_labels(super(BaseMultiviewClassifier, self).predict(new_X))
 
 

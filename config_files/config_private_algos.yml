@@ -13,19 +13,19 @@ debug: True
 add_noise: False
 noise_std: 0.0
 res_dir: "../results/"
-track_tracebacks: True
+track_tracebacks: False
 
 # All the classification-realted configuration options
 multiclass_method: "oneVersusOne"
 split: 0.5
-nb_folds: 2
+nb_folds: 5
 nb_class: 2
 classes:
-type: ["multiview"]
-algos_monoview: ["cb_boost"]
-algos_multiview: ["mucombo", "mumbo", "lp_norm_mkl", "mvml"]
+type: ["multiview", "monoview"]
+algos_monoview: ["decision_tree"]
+algos_multiview: ["lp_norm_mkl", "mumbo", "weighted_linear_late_fusion"]
 stats_iter: 1
 metrics: ["accuracy_score", "f1_score"]
 metric_princ: "f1_score"
-hps_type: "randomized_search"
-hps_iter: 2
+hps_type: "None"
+hps_iter: 10
