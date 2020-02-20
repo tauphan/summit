@@ -13,7 +13,7 @@ debug: True
 add_noise: False
 noise_std: 0.0
 res_dir: "../results/"
-track_tracebacks: True
+track_tracebacks: False
 
 # All the classification-realted configuration options
 multiclass_method: "oneVersusOne"
@@ -21,8 +21,8 @@ split: 0.5
 nb_folds: 5
 nb_class: 3
 classes:
-type: ["multiview"]
-algos_monoview: ["random_forest"]
+type: ["monoview"]
+algos_monoview: ["cb_boost"]
 algos_multiview: ["mucombo", "mumbo", "lp_norm_mkl", "mvml"]
 stats_iter: 1
 metrics: ["accuracy_score", "f1_score"]
