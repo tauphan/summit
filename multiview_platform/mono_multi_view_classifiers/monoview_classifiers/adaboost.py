@@ -5,7 +5,8 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 from .. import metrics
-from ..monoview.monoview_utils import CustomRandint, BaseMonoviewClassifier, get_accuracy_graph
+from ..monoview.monoview_utils import CustomRandint, BaseMonoviewClassifier, \
+    get_accuracy_graph
 
 # Author-Info
 __author__ = "Baptiste Bauvin"
@@ -57,12 +58,12 @@ class Adaboost(AdaBoostClassifier, BaseMonoviewClassifier):
         if isinstance(base_estimator, str):
             if base_estimator == "DecisionTreeClassifier":
                 base_estimator = DecisionTreeClassifier()
-        super(Adaboost, self).__init__(
-            random_state=random_state,
-            n_estimators=n_estimators,
-            base_estimator=base_estimator,
-            algorithm="SAMME"
-        )
+        AdaBoostClassifier.__init__(self,
+                                    random_state=random_state,
+                                    n_estimators=n_estimators,
+                                    base_estimator=base_estimator,
+                                    algorithm="SAMME"
+                                    )
         self.param_names = ["n_estimators", "base_estimator"]
         self.classed_params = ["base_estimator"]
         self.distribs = [CustomRandint(low=1, high=500),
@@ -91,7 +92,7 @@ class Adaboost(AdaBoostClassifier, BaseMonoviewClassifier):
             Returns self.
         """
         begin = time.time()
-        super(Adaboost, self).fit(X, y, sample_weight=sample_weight)
+        AdaBoostClassifier.fit(self, X, y, sample_weight=sample_weight)
         end = time.time()
         self.train_time = end - begin
         self.train_shape = X.shape
@@ -100,16 +101,6 @@ class Adaboost(AdaBoostClassifier, BaseMonoviewClassifier):
         self.metrics = np.array([self.plotted_metric.score(pred, y) for pred in
                                  self.staged_predict(X)])
         return self
-
-    # def canProbas(self):
-    #     """
-    #     Used to know if the classifier can return label probabilities
-    #
-    #     Returns
-    #     -------
-    #     True
-    #     """
-    #     return True
 
     def predict(self, X):
         """
@@ -128,7 +119,7 @@ class Adaboost(AdaBoostClassifier, BaseMonoviewClassifier):
             The estimated labels.
         """
         begin = time.time()
-        pred = super(Adaboost, self).predict(X)
+        pred = AdaBoostClassifier.predict(self, X)
         end = time.time()
         self.pred_time = end - begin
         # TODO : mauvaise verif
@@ -157,13 +148,3 @@ class Adaboost(AdaBoostClassifier, BaseMonoviewClassifier):
         np.savetxt(directory + "times.csv",
                    np.array([self.train_time, self.pred_time]), delimiter=',')
         return interpretString
-
-
-
-def paramsToSet(nIter, random_state):
-    """Used for weighted linear early fusion to generate random search sets"""
-    paramsSet = []
-    for _ in range(nIter):
-        paramsSet.append({"n_estimators": random_state.randint(1, 500),
-                          "base_estimator": None})
-    return paramsSet
