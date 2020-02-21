@@ -22,7 +22,7 @@ nb_folds: 5
 nb_class: 3
 classes:
 type: ["monoview"]
-algos_monoview: ["cb_boost", "scm", "cq_boost", "imbalance_bagging"]
+algos_monoview: ["cb_boost",]
 algos_multiview: ["lp_norm_mkl", "mumbo", "weighted_linear_late_fusion", "mucombo", "mvml"]
 stats_iter: 5
 metrics: ["accuracy_score", "f1_score"]
