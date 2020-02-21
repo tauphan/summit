@@ -14,8 +14,8 @@ class MuCumbo(BaseMultiviewClassifier, MuCumboClassifier):
     def __init__(self, base_estimator=None,
                  n_estimators=50,
                  random_state=None,):
-        super().__init__(random_state)
-        super(BaseMultiviewClassifier, self).__init__(base_estimator=base_estimator,
+        BaseMultiviewClassifier.__init__(self, random_state)
+        MuCumboClassifier.__init__(self, base_estimator=base_estimator,
                                     n_estimators=n_estimators,
                                     random_state=random_state,)
         self.param_names = ["base_estimator", "n_estimators", "random_state",]
@@ -28,7 +28,7 @@ class MuCumbo(BaseMultiviewClassifier, MuCumboClassifier):
                                                                  view_indices)
         numpy_X, view_limits = X.to_numpy_array(example_indices=train_indices,
                                                 view_indices=view_indices)
-        return super(BaseMultiviewClassifier, self).fit(numpy_X, y[train_indices],
+        return MuCumboClassifier.fit(self, numpy_X, y[train_indices],
                                                 view_limits)
 
     def predict(self, X, example_indices=None, view_indices=None):
@@ -37,4 +37,4 @@ class MuCumbo(BaseMultiviewClassifier, MuCumboClassifier):
                                                                  view_indices)
         numpy_X, view_limits = X.to_numpy_array(example_indices=example_indices,
                                                 view_indices=view_indices)
-        return super(BaseMultiviewClassifier, self).predict(numpy_X)
+        return MuCumboClassifier.predict(self, numpy_X)

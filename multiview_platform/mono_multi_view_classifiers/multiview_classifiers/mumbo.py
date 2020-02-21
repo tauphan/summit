@@ -14,8 +14,8 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
                  n_estimators=50,
                  random_state=None,
                  best_view_mode="edge"):
-        super().__init__(random_state)
-        super(BaseMultiviewClassifier, self).__init__(base_estimator=base_estimator,
+        BaseMultiviewClassifier.__init__(self, random_state)
+        MumboClassifier.__init__(self, base_estimator=base_estimator,
                                     n_estimators=n_estimators,
                                     random_state=random_state,
                                     best_view_mode=best_view_mode)
@@ -29,7 +29,7 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
                                                                  view_indices)
         numpy_X, view_limits = X.to_numpy_array(example_indices=train_indices,
                                                 view_indices=view_indices)
-        return super(BaseMultiviewClassifier, self).fit(numpy_X, y[train_indices],
+        return MumboClassifier.fit(self, numpy_X, y[train_indices],
                                                 view_limits)
 
     def predict(self, X, example_indices=None, view_indices=None):
@@ -38,7 +38,7 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
                                                                  view_indices)
         numpy_X, view_limits = X.to_numpy_array(example_indices=example_indices,
                                                 view_indices=view_indices)
-        return super(BaseMultiviewClassifier, self).predict(numpy_X)
+        return MumboClassifier.predict(self, numpy_X)
 
     def get_interpretation(self, directory, labels, multiclass=False):
         intepret_string = "Mumbo used "+str(len(self.best_views_)) +" iterations to converge, selecting views : \n" + ", ".join(map(str, self.best_views_)) + "\n\n With estimator weights : \n"+ "\n".join(map(str,self.estimator_weights_/np.sum(self.estimator_weights_)))
