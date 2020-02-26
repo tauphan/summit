@@ -9,11 +9,11 @@ from ..utils.hyper_parameter_search import CustomUniform, CustomRandint
 classifier_class_name = "LPNormMKL"
 
 class LPNormMKL(KernelClassifier, MKL):
-    def __init__(self, random_state=None, lmbda=0.1, m_param=1, n_loops=50,
+    def __init__(self, random_state=None, lmbda=0.1, nystrom_param=1, n_loops=50,
                  precision=0.0001, use_approx=True, kernel="rbf",
                  kernel_params=None):
         KernelClassifier.__init__(self, random_state)
-        MKL.__init__(self, lmbda, m_param=m_param,
+        MKL.__init__(self, lmbda, nystrom_param=nystrom_param,
                                                       kernel=kernel,
                                                       n_loops=n_loops,
                                                       precision=precision,

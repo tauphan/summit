@@ -1,10 +1,10 @@
 # The base configuration of the benchmark
 log: True
-name: ["plausible"]
+name: ["digits"]
 label: "_"
 file_type: ".hdf5"
 views:
-pathf: "../data/"
+pathf: "/home/baptiste/Documents/Datasets/Digits/"
 nice: 0
 random_state: 42
 nb_cores: 1
@@ -17,15 +17,15 @@ track_tracebacks: False
 
 # All the classification-realted configuration options
 multiclass_method: "oneVersusOne"
-split: 0.5
+split: 0.25
 nb_folds: 5
-nb_class: 3
+nb_class:
 classes:
-type: ["monoview"]
-algos_monoview: ["cb_boost",]
-algos_multiview: ["lp_norm_mkl", "mumbo", "weighted_linear_late_fusion", "mucombo", "mvml"]
-stats_iter: 5
+type: ["multiview", "monoview"]
+algos_monoview: ["cb_boost","decision_tree", "random_forest"]
+algos_multiview: ["mumbo","mvml", "lp_norm_mkl", "mucombo"]
+stats_iter: 10
 metrics: ["accuracy_score", "f1_score"]
-metric_princ: "f1_score"
-hps_type: "None"
-hps_iter: 10
+metric_princ: "accuracy_score"
+hps_type: "randomized_search-equiv"
+hps_iter: 30
