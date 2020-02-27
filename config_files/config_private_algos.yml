@@ -28,4 +28,4 @@ stats_iter: 10
 metrics: ["accuracy_score", "f1_score"]
 metric_princ: "accuracy_score"
 hps_type: "randomized_search-equiv"
-hps_iter: 30
+hps_iter: 5
