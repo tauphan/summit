@@ -26,6 +26,7 @@ class MuCumbo(BaseMultiviewClassifier, MuCumboClassifier):
         train_indices, view_indices = get_examples_views_indices(X,
                                                                  train_indices,
                                                                  view_indices)
+        self.used_views = view_indices
         numpy_X, view_limits = X.to_numpy_array(example_indices=train_indices,
                                                 view_indices=view_indices)
         return MuCumboClassifier.fit(self, numpy_X, y[train_indices],
@@ -35,6 +36,7 @@ class MuCumbo(BaseMultiviewClassifier, MuCumboClassifier):
         example_indices, view_indices = get_examples_views_indices(X,
                                                                  example_indices,
                                                                  view_indices)
+        self._check_views(view_indices)
         numpy_X, view_limits = X.to_numpy_array(example_indices=example_indices,
                                                 view_indices=view_indices)
         return MuCumboClassifier.predict(self, numpy_X)

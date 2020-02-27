@@ -42,8 +42,7 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
         example_indices, view_indices = get_examples_views_indices(X,
                                                                  example_indices,
                                                                  view_indices)
-        if not np.array_equiv(np.sort(view_indices,axis=0), np.sort(self.used_views,axis=0)):
-            raise ValueError("Fitted with {} views, asking a prediction on {}".format(self.used_views, view_indices))
+        self._check_views(view_indices)
         numpy_X, view_limits = X.to_numpy_array(example_indices=example_indices,
                                                 view_indices=view_indices)
         return MumboClassifier.predict(self, numpy_X)

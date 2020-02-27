@@ -17,13 +17,13 @@ track_tracebacks: False
 
 # All the classification-realted configuration options
 multiclass_method: "oneVersusOne"
-split: 0.25
+split: 0.75
 nb_folds: 5
 nb_class:
 classes:
 type: ["multiview",]
-algos_monoview: ["cb_boost","decision_tree", "random_forest"]
-algos_multiview: ["mumbo",]
+algos_monoview: ["decision_tree", "random_forest"]
+algos_multiview: ["mumbo","mvml"]
 stats_iter: 2
 metrics: ["accuracy_score", "f1_score"]
 metric_princ: "accuracy_score"
