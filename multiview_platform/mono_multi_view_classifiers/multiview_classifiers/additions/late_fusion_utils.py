@@ -151,7 +151,7 @@ class LateFusionClassifier(BaseMultiviewClassifier, BaseFusionClassifier):
                 {classifier_name: self.classifier_configs[classifier_name]} for
                 classifier_name in self.classifiers_names]
         elif self.classifier_configs is None:
-            self.classifier_configs = [None for _ in range(nb_clfs)]
+            self.classifier_configs = [{} for _ in range(nb_clfs)]
 
     # def verif_clf_views(self, classifier_names, nb_view):
     #     if classifier_names is None:

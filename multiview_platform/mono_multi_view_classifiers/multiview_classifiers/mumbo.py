@@ -5,6 +5,7 @@ from multimodal.boosting.mumbo import MumboClassifier
 from ..multiview.multiview_utils import BaseMultiviewClassifier
 from ..utils.hyper_parameter_search import CustomRandint
 from ..utils.dataset import get_examples_views_indices
+from ..utils.base import base_boosting_estimators
 
 classifier_class_name = "Mumbo"
 
@@ -20,10 +21,7 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
                                     random_state=random_state,
                                     best_view_mode=best_view_mode)
         self.param_names = ["base_estimator", "n_estimators", "random_state", "best_view_mode"]
-        self.distribs = [[DecisionTreeClassifier(max_depth=1),
-                          DecisionTreeClassifier(max_depth=2),
-                          DecisionTreeClassifier(max_depth=3),
-                          DecisionTreeClassifier(max_depth=4)],
+        self.distribs = [base_boosting_estimators,
                          CustomRandint(5,200), [random_state], ["edge", "error"]]
 
     def fit(self, X, y, train_indices=None, view_indices=None):
