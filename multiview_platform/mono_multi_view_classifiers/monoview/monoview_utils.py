@@ -155,17 +155,20 @@ def percent(x, pos):
 
 class MonoviewResult(object):
     def __init__(self, view_index, classifier_name, view_name, metrics_scores,
-                 full_labels_pred, classifier_config, test_folds_preds,
-                 classifier, n_features):
+                 full_labels_pred, classifier_config,
+                 classifier, n_features, hps_duration, fit_duration,
+                 pred_duration):
         self.view_index = view_index
         self.classifier_name = classifier_name
         self.view_name = view_name
         self.metrics_scores = metrics_scores
         self.full_labels_pred = full_labels_pred
         self.classifier_config = classifier_config
-        self.test_folds_preds = test_folds_preds
         self.clf = classifier
         self.n_features = n_features
+        self.hps_duration = hps_duration
+        self.fit_duration = fit_duration
+        self.pred_duration = pred_duration
 
     def get_classifier_name(self):
         return self.classifier_name + "-" + self.view_name

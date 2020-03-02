@@ -151,11 +151,15 @@ from .. import multiview_classifiers
 
 class MultiviewResult(object):
     def __init__(self, classifier_name, classifier_config,
-                 metrics_scores, full_labels):
+                 metrics_scores, full_labels, hps_duration, fit_duration,
+                 pred_duration):
         self.classifier_name = classifier_name
         self.classifier_config = classifier_config
         self.metrics_scores = metrics_scores
         self.full_labels_pred = full_labels
+        self.hps_duration = hps_duration
+        self.fit_duration = fit_duration
+        self.pred_duration = pred_duration
 
     def get_classifier_name(self):
         try:
@@ -175,6 +179,8 @@ class MultiviewResultAnalyzer(ResultAnalyser):
                  hps_method, metrics_list, n_iter, class_label_names,
                  train_pred, test_pred, output_file_name, labels, database_name,
                  nb_cores, duration):
+        if hps_method.endswith("equiv"):
+            n_iter = n_iter*len(view_names)
         ResultAnalyser.__init__(self, classifier, classification_indices, k_folds,
                                 hps_method, metrics_list, n_iter, class_label_names,
                                 train_pred, test_pred, output_file_name, labels, database_name,
@@ -187,4 +193,4 @@ class MultiviewResultAnalyzer(ResultAnalyser):
                                                                 self.classifier_name)
 
     def get_view_specific_info(self):
-        return "\t-Views : " + ', '.join(self.view_names) + "\n"
+        return "\t- Views : " + ', '.join(self.view_names) + "\n"
