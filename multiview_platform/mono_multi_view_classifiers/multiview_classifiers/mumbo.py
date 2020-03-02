@@ -86,6 +86,8 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
         for best_view, estimator_weight in zip(self.best_views_, self.estimator_weights_):
             self.view_importances[best_view] += estimator_weight
         self.view_importances /= np.sum(self.view_importances)
+        np.savetxt(directory+"view_importances.csv", self.view_importances,
+                   delimiter=',')
         sorted_view_indices = np.argsort(-self.view_importances)
         interpret_string = "Mumbo used {} iterations to converge.".format(self.best_views_.shape[0])
         interpret_string+= "\n\nViews importance : \n"
