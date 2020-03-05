@@ -27,22 +27,25 @@ algos_multiview: ["weighted_linear_early_fusion",]
 stats_iter: 2
 metrics: ["accuracy_score", "f1_score"]
 metric_princ: "accuracy_score"
-hps_type: "Random"
+hps_type: "Grid"
 hps_args:
   n_iter: 4
   equivalent_draws: False
+
+  decision_tree:
+    max_depth: [1,2,3,4,5]
+
+
   weighted_linear_early_fusion:
     view_weights: [null]
-    monoview_classifier_name: ["decision_tree"]
-    monoview_classifier_config:
-      - decision_tree:
-          max_depth: 1
-          criterion: "gini"
-          splitter: "best"
-      - decision_tree:
-          max_depth: 2
-          criterion: "gini"
-          splitter: "best"
+    monoview_classifier: ["decision_tree"]
+    monoview_classifier__max_depth: [1,2]
+  mumbo:
+    base_estimator: ["decision_tree", "random_forest"]
+    base_estimator__max_depth: [4]
+    n_estimator: [50, 500, 1000]
+
+
 
 
 ######################################
