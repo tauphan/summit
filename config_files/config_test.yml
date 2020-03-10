@@ -21,13 +21,13 @@ split: 0.49
 nb_folds: 2
 nb_class: 2
 classes:
-type: ["multiview", "monoview"]
+type: ["multiview",]
 algos_monoview: ["decision_tree" ]
 algos_multiview: ["weighted_linear_early_fusion",]
 stats_iter: 2
 metrics: ["accuracy_score", "f1_score"]
 metric_princ: "accuracy_score"
-hps_type: "Grid"
+hps_type: "None"
 hps_args:
   n_iter: 4
   equivalent_draws: False
@@ -40,10 +40,7 @@ hps_args:
     view_weights: [null]
     monoview_classifier: ["decision_tree"]
     monoview_classifier__max_depth: [1,2]
-  mumbo:
-    base_estimator: ["decision_tree", "random_forest"]
-    base_estimator__max_depth: [4]
-    n_estimator: [50, 500, 1000]
+
 
 
 
@@ -51,6 +48,14 @@ hps_args:
 ######################################
 ## The Monoview Classifier arguments #
 ######################################
+
+mumbo:
+  base_estimator__criterion: 'gini'
+  base_estimator__max_depth: 4
+  base_estimator__random_state: None
+  base_estimator__splitter: 'best'
+  best_view_mode: 'edge'
+  n_estimators: 50
 #
 #random_forest:
 #  n_estimators: [25]

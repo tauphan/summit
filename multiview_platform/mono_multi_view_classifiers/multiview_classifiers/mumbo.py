@@ -1,12 +1,15 @@
 from sklearn.tree import DecisionTreeClassifier
 from  sklearn.base import BaseEstimator
 import numpy as np
+import os
 
 from multimodal.boosting.mumbo import MumboClassifier
+
 from ..multiview.multiview_utils import BaseMultiviewClassifier
 from ..utils.hyper_parameter_search import CustomRandint
 from ..utils.dataset import get_examples_views_indices
 from ..utils.base import base_boosting_estimators
+from ..utils.organization import secure_file_path
 from .. import monoview_classifiers
 
 classifier_class_name = "Mumbo"
@@ -69,10 +72,8 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
                            for view_index in view_indices]
         numpy_X, view_limits = X.to_numpy_array(example_indices=train_indices,
                                                 view_indices=view_indices)
-        self.view_shapes = [view_limits[ind]-view_limits[ind-1]
-                            if ind > 0
-                            else view_limits[ind]
-                            for ind in range(len(self.used_views))]
+        self.view_shapes = [view_limits[ind+1]-view_limits[ind]
+                            for ind in range(len(self.used_views)) ]
 
         return MumboClassifier.fit(self, numpy_X, y[train_indices],
                                                 view_limits)
@@ -86,7 +87,7 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
                                                 view_indices=view_indices)
         return MumboClassifier.predict(self, numpy_X)
 
-    def get_interpretation(self, directory, labels, multiclass=False):
+    def get_interpretation(self, directory, base_file_name, labels, multiclass=False):
         self.view_importances = np.zeros(len(self.used_views))
         self.feature_importances_ = [np.zeros(view_shape)
                                     for view_shape in self.view_shapes]
@@ -100,8 +101,14 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
         self.feature_importances_ = [feature_importances/importances_sum
                                      for feature_importances
                                      in self.feature_importances_]
+        for feature_importances, view_name in zip(self.feature_importances_, self.view_names):
+            secure_file_path(os.path.join(directory, "feature_importances",
+                                    base_file_name+view_name+"-feature_importances.csv"))
+            np.savetxt(os.path.join(directory, "feature_importances",
+                                    base_file_name+view_name+"-feature_importances.csv"),
+                       feature_importances, delimiter=',')
         self.view_importances /= np.sum(self.view_importances)
-        np.savetxt(directory+"view_importances.csv", self.view_importances,
+        np.savetxt(os.path.join(directory, base_file_name+"view_importances.csv"), self.view_importances,
                    delimiter=',')
 
         sorted_view_indices = np.argsort(-self.view_importances)
