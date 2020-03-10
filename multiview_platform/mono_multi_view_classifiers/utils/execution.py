@@ -180,7 +180,7 @@ def init_log_file(name, views, cl_type, log, debug, label,
     return result_directory
 
 
-def gen_splits(labels, split_ratio, stats_iter_random_states):
+def gen_splits(dataset_var, split_ratio, stats_iter_random_states):
     r"""Used to _gen the train/test splits using one or multiple random states.
 
     Parameters
@@ -198,6 +198,8 @@ def gen_splits(labels, split_ratio, stats_iter_random_states):
         For each statistical iteration a couple of numpy.ndarrays is stored with the indices for the training set and
         the ones of the testing set.
     """
+    labels = dataset_var.get_labels()
+    example_ids = dataset_var.example_ids
     indices = np.arange(len(labels))
     splits = []
     for random_state in stats_iter_random_states:
@@ -208,7 +210,10 @@ def gen_splits(labels, split_ratio, stats_iter_random_states):
         for fold in folds:
             train_fold, test_fold = fold
         train_indices = indices[train_fold]
-        test_indices = indices[test_fold]
+        test_indices = []
+        for ind in test_fold:
+            if not example_ids[ind].startswith("new_"):
+                test_indices.append(indices[ind])
         splits.append([train_indices, test_indices])
 
     return splits

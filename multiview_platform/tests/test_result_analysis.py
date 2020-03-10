@@ -19,7 +19,7 @@ class Test_get_arguments(unittest.TestCase):
         self.assertTrue(argument_dict["valid"])
 
 
-class Test_get_metrics_scores_biclass(unittest.TestCase):
+class Test_get_metrics_scores(unittest.TestCase):
 
 
     def test_simple(self):
@@ -131,7 +131,7 @@ class Test_get_metrics_scores_biclass(unittest.TestCase):
             np.array(metrics_scores["f1_score"].columns),
             np.array(["mv", "dt-1"]))
 
-class Test_get_example_errors_biclass(unittest.TestCase):
+class Test_get_example_errors(unittest.TestCase):
 
     def test_simple(self):
         ground_truth = np.array([0,1,0,1,0,1,0,1, -100])

@@ -376,7 +376,7 @@ def get_fig_size(nb_results, min_size=15, multiplier=1.0, bar_width=0.35):
 
 
 def get_metrics_scores(metrics, results):
-    r"""Used to extract metrics scores in case of biclass classification
+    r"""Used to extract metrics scores in case of classification
 
     Parameters
     ----------
@@ -695,8 +695,7 @@ def publish_feature_importances(feature_importances, directory, database_name,
 
 
 def get_arguments(benchmark_argument_dictionaries, iter_index):
-    r"""Used to get the arguments passed to the benchmark executing function corresponding to the flag of a
-    biclass experimentation.
+    r"""Used to get the arguments passed to the benchmark executing function corresponding to the flag of an experimentation.
 
     Parameters
     ----------
@@ -773,7 +772,7 @@ def publish_tracebacks(directory, database_name, labels_names, tracebacks,
 
 def analyze_iterations(results, benchmark_argument_dictionaries, stats_iter,
                        metrics, example_ids, labels):
-    r"""Used to extract and format the results of the different biclass experimentations performed.
+    r"""Used to extract and format the results of the different experimentations performed.
 
     Parameters
     ----------
@@ -798,7 +797,7 @@ def analyze_iterations(results, benchmark_argument_dictionaries, stats_iter,
         The list contains a dictionary for each statistical iteration. This dictionary contains a dictionary for each
         label combination, regrouping the scores for each metrics and the information useful to plot errors on examples.
     """
-    logging.debug("Srart:\t Analzing all biclass resuls")
+    logging.debug("Srart:\t Analzing all resuls")
     iter_results = {"metrics_scores": [i for i in range(stats_iter)],
                     "example_errors": [i for i in range(stats_iter)],
                     "feature_importances": [i for i in range(stats_iter)],
@@ -835,7 +834,7 @@ def analyze_iterations(results, benchmark_argument_dictionaries, stats_iter,
         iter_results["labels"] = labels
         iter_results["durations"][iter_index] = durations
 
-    logging.debug("Done:\t Analzing all biclass resuls")
+    logging.debug("Done:\t Analyzing all results")
 
     return res, iter_results, flagged_tracebacks_list
 
@@ -888,7 +887,7 @@ def publish_all_example_errors(iter_results, directory,
                                stats_iter,
                                example_ids, labels):
     logging.debug(
-        "Start:\t Global biclass label analysis figure generation")
+        "Start:\t Global label analysis figure generation")
 
     nbExamples, nbClassifiers, data, \
     error_on_examples, classifier_names = gen_error_data_glob(iter_results,
@@ -905,7 +904,7 @@ def publish_all_example_errors(iter_results, directory,
                     nbExamples, os.path.join(directory, ""))
 
     logging.debug(
-        "Done:\t Global biclass label analysis figures generation")
+        "Done:\t Global label analysis figures generation")
 
 
 
@@ -931,18 +930,18 @@ def add_new_labels_combination(iterBiclassResults, labelsComination,
     return iterBiclassResults
 
 
-def add_new_metric(iter_biclass_results, metric, labels_combination,
+def add_new_metric(iter_results, metric, labels_combination,
                    nb_classifiers,
                    stats_iter):
-    if metric[0] not in iter_biclass_results[labels_combination][
+    if metric[0] not in iter_results[labels_combination][
         "metrics_scores"]:
-        iter_biclass_results[labels_combination]["metrics_scores"][
+        iter_results[labels_combination]["metrics_scores"][
             metric[0]] = {
             "train_scores":
                 np.zeros((nb_classifiers, stats_iter)),
             "test_scores":
                 np.zeros((nb_classifiers, stats_iter))}
-    return iter_biclass_results
+    return iter_results
 
 
 def format_previous_results(iter_results_lists):
@@ -969,8 +968,6 @@ def format_previous_results(iter_results_lists):
     metrics_analysis = {}
     feature_importances_analysis = {}
     feature_importances_stds = {}
-    # labels = dict((key,"") for key in biclass_results.keys())
-    # for biclass_result in biclass_results.items():
 
     metric_concat_dict = {}
     for iter_index, metrics_score in enumerate(
@@ -1027,13 +1024,13 @@ def format_previous_results(iter_results_lists):
            iter_results_lists["labels"], duration_means, duration_stds
 
 
-def analyze_all(biclass_results, stats_iter, directory, data_base_name,
+def analyze_all(iters_results, stats_iter, directory, data_base_name,
                 example_ids):
     """Used to format the results in order to plot the mean results on the iterations"""
     metrics_analysis, error_analysis, \
     feature_importances, feature_importances_stds, \
     labels, duration_means, \
-    duration_stds = format_previous_results(biclass_results)
+    duration_stds = format_previous_results(iters_results)
 
     results = publish_all_metrics_scores(metrics_analysis,
                                          directory,
@@ -1059,7 +1056,7 @@ def get_results(results, stats_iter, benchmark_argument_dictionaries,
     """Used to analyze the results of the previous benchmarks"""
     data_base_name = benchmark_argument_dictionaries[0]["args"]["name"]
 
-    results_means_std, biclass_results, flagged_failed = analyze_iterations(
+    results_means_std, iters_results, flagged_failed = analyze_iterations(
         results, benchmark_argument_dictionaries,
         stats_iter, metrics, example_ids, labels)
     if flagged_failed:
@@ -1067,7 +1064,7 @@ def get_results(results, stats_iter, benchmark_argument_dictionaries,
 
     if stats_iter > 1:
         results_means_std = analyze_all(
-            biclass_results, stats_iter, directory,
+            iters_results, stats_iter, directory,
             data_base_name, example_ids)
     return results_means_std
 
