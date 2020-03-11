@@ -14,7 +14,8 @@ from . import monoview_classifiers
 from . import multiview_classifiers
 from .monoview.exec_classif_mono_view import exec_monoview
 from .multiview.exec_multiview import exec_multiview
-from .result_analysis import get_results, plot_results_noise, analyze_iterations
+from .result_analysis.noise_analysis import plot_results_noise
+from .result_analysis.execution import analyze_iterations, analyze
 from .utils import execution, dataset, configuration
 from .utils.organization import secure_file_path
 from .utils.dataset import delete_HDF5
@@ -198,7 +199,7 @@ def init_monoview_exps(classifier_names,
 def gen_single_monoview_arg_dictionary(classifier_name, arguments, nb_class,
                                        view_index, view_name, hps_kwargs):
     if classifier_name in arguments:
-        classifier_config = dict((key, value[0]) for key, value in arguments[
+        classifier_config = dict((key, value) for key, value in arguments[
             classifier_name].items())
     else:
         classifier_config = {}
@@ -226,10 +227,7 @@ def extract_dict(classifier_config):
     """Reverse function of get_path_dict"""
     extracted_dict = {}
     for key, value in classifier_config.items():
-        if isinstance(value, list):
-            extracted_dict = set_element(extracted_dict, key, value[0])
-        else:
-            extracted_dict = set_element(extracted_dict, key, value)
+        extracted_dict = set_element(extracted_dict, key, value)
     return extracted_dict
 
 
@@ -760,7 +758,7 @@ def exec_benchmark(nb_cores, stats_iter,
                    benchmark_arguments_dictionaries,
                    directory, metrics, dataset_var, track_tracebacks,
                    exec_one_benchmark_mono_core=exec_one_benchmark_mono_core,
-                   get_results=get_results, delete=delete_HDF5,
+                   analyze=analyze, delete=delete_HDF5,
                    analyze_iterations=analyze_iterations):
     r"""Used to execute the needed benchmark(s) on multicore or mono-core functions.
 
@@ -834,12 +832,12 @@ def exec_benchmark(nb_cores, stats_iter,
 
     # Do everything with flagging
     logging.debug("Start:\t Analyzing predictions")
-    results_mean_stds = get_results(results, stats_iter,
-                                    benchmark_arguments_dictionaries,
-                                    metrics,
-                                    directory,
-                                    dataset_var.example_ids,
-                                    dataset_var.get_labels())
+    results_mean_stds = analyze(results, stats_iter,
+                                benchmark_arguments_dictionaries,
+                                metrics,
+                                directory,
+                                dataset_var.example_ids,
+                                dataset_var.get_labels())
     logging.debug("Done:\t Analyzing predictions")
     delete(benchmark_arguments_dictionaries, nb_cores, dataset_var)
     return results_mean_stds
