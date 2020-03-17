@@ -1,10 +1,10 @@
 # The base configuration of the benchmark
 log: True
-name: ["digits"]
+name: ["generated_dset"]
 label: "_"
 file_type: ".hdf5"
 views:
-pathf: "/home/baptiste/Documents/Datasets/Digits/"
+pathf: "/home/baptiste/Documents/Gitwork/multiview_generator/generator/"
 nice: 0
 random_state: 42
 nb_cores: 1
@@ -16,16 +16,31 @@ res_dir: "../results/"
 track_tracebacks: False
 
 # All the classification-realted configuration options
-multiclass_method: "oneVersusOne"
-split: 0.75
+split: 0.5
 nb_folds: 5
 nb_class:
 classes:
-type: ["multiview",]
-algos_monoview: ["decision_tree", "random_forest"]
-algos_multiview: ["mumbo","mvml"]
-stats_iter: 2
+type: ["monoview", "multiview",]
+algos_monoview: ["decision_tree",]
+algos_multiview: ["mumbo","weighted_linear_early_fusion"]
+stats_iter: 30
 metrics: ["accuracy_score", "f1_score"]
 metric_princ: "accuracy_score"
-hps_type: "randomized_search-equiv"
-hps_iter: 2
+hps_type: "None"
+hps_args:
+  n_iter: 4
+  equivalent_draws: False
+
+  decision_tree:
+    max_depth: 3
+
+
+  weighted_linear_early_fusion:
+    view_weights: null
+    monoview_classifier: "decision_tree"
+    monoview_classifier__max_depth: 10
+
+  mumbo:
+    n_estimators: 15
+    decision_tree:
+      max_depth: 3
