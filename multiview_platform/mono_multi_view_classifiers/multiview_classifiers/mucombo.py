@@ -42,3 +42,7 @@ class MuCumbo(BaseMultiviewClassifier, MuCumboClassifier):
         numpy_X, view_limits = X.to_numpy_array(example_indices=example_indices,
                                                 view_indices=view_indices)
         return MuCumboClassifier.predict(self, numpy_X)
+
+    def get_interpretation(self, directory, base_file_name, labels,
+                           multiclass=False):
+        return ""
