@@ -213,7 +213,7 @@ def gen_splits(dataset_var, split_ratio, stats_iter_random_states):
         for ind in test_fold:
             if not example_ids[ind].startswith("new_"):
                 test_indices.append(indices[ind])
-        splits.append([train_indices, test_indices])
+        splits.append([train_indices, np.array(test_indices)])
 
     return splits
 

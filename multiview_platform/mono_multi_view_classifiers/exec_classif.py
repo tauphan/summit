@@ -903,7 +903,7 @@ def exec_classif(arguments):
             args["full"],
             )
         args["name"] = datasetname
-        splits = execution.gen_splits(dataset_var.get_labels(),
+        splits = execution.gen_splits(dataset_var,
                                       args["split"],
                                       stats_iter_random_states)
 
