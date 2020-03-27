@@ -2,7 +2,8 @@ import numpy as np
 from sklearn.base import BaseEstimator
 from abc import abstractmethod
 from datetime import timedelta as hms
-
+from tabulate import tabulate
+from sklearn.metrics import confusion_matrix as confusion
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 
@@ -139,17 +140,16 @@ def get_names(classed_list):
     return np.array([object_.__class__.__name__ for object_ in classed_list])
 
 
-def get_metric(metric_list):
+def get_metric(metrics_dict):
     """
     Fetches the metric module in the metrics package
     """
-    metric_module = getattr(metrics, metric_list[0][0])
-    if metric_list[0][1] is not None:
-        metric_kwargs = dict((index, metricConfig) for index, metricConfig in
-                             enumerate(metric_list[0][1]))
-    else:
-        metric_kwargs = {}
-    return metric_module, metric_kwargs
+    for metric_name, metric_kwargs in metrics_dict.items():
+        if metric_name.endswith("*"):
+            princ_metric_name = metric_name[:-1]
+            princ_metric_kwargs = metric_kwargs
+    metric_module = getattr(metrics, princ_metric_name)
+    return metric_module, princ_metric_kwargs
 
 
 class ResultAnalyser():
@@ -160,8 +160,8 @@ class ResultAnalyser():
     """
 
     def __init__(self, classifier, classification_indices, k_folds,
-                 hps_method, metrics_list, n_iter, class_label_names,
-                 train_pred, test_pred, directory, base_file_name, labels,
+                 hps_method, metrics_dict, n_iter, class_label_names,
+                 pred, directory, base_file_name, labels,
                  database_name, nb_cores, duration):
         """
 
@@ -175,7 +175,7 @@ class ResultAnalyser():
 
         hps_method: string naming the hyper-parameter search method
 
-        metrics_list: list of the metrics to compute on the results
+        metrics_dict: list of the metrics to compute on the results
 
         n_iter: number of HPS iterations
 
@@ -199,11 +199,10 @@ class ResultAnalyser():
         self.train_indices, self.test_indices = classification_indices
         self.k_folds = k_folds
         self.hps_method = hps_method
-        self.metrics_list = metrics_list
+        self.metrics_dict = metrics_dict
         self.n_iter = n_iter
         self.class_label_names = class_label_names
-        self.train_pred = train_pred
-        self.test_pred = test_pred
+        self.pred = pred
         self.directory = directory
         self.base_file_name = base_file_name
         self.labels = labels
@@ -212,6 +211,7 @@ class ResultAnalyser():
         self.nb_cores = nb_cores
         self.duration = duration
         self.metric_scores = {}
+        self.class_metric_scores = {}
 
     def get_all_metrics_scores(self, ):
         """
@@ -219,11 +219,14 @@ class ResultAnalyser():
         Returns
         -------
         """
-        for metric, metric_args in self.metrics_list:
-            self.metric_scores[metric] = self.get_metric_scores(metric,
-                                                                    metric_args)
+        for metric, metric_args in self.metrics_dict.items():
+            class_train_scores, class_test_scores, train_score, test_score\
+                = self.get_metric_score(metric, metric_args)
+            self.class_metric_scores[metric] = (class_train_scores,
+                                                class_test_scores)
+            self.metric_scores[metric] = (train_score, test_score)
 
-    def get_metric_scores(self, metric, metric_kwargs):
+    def get_metric_score(self, metric, metric_kwargs):
         """
         Get the train and test scores for a specific metric and its arguments
 
@@ -238,14 +241,28 @@ class ResultAnalyser():
         -------
         train_score, test_score
         """
-        metric_module = getattr(metrics, metric)
+        if not metric.endswith("*"):
+            metric_module = getattr(metrics, metric)
+        else:
+            metric_module = getattr(metrics, metric[:-1])
+        class_train_scores = []
+        class_test_scores = []
+        for label_value in np.unique(self.labels):
+            train_example_indices = self.train_indices[np.where(self.labels[self.train_indices]==label_value)[0]]
+            test_example_indices = self.test_indices[np.where(self.labels[self.test_indices] == label_value)[0]]
+            class_train_scores.append(metric_module.score(y_true=self.labels[train_example_indices],
+                                              y_pred=self.pred[train_example_indices],
+                                              **metric_kwargs))
+            class_test_scores.append(metric_module.score(y_true=self.labels[test_example_indices],
+                                             y_pred=self.pred[test_example_indices],
+                                             **metric_kwargs))
         train_score = metric_module.score(y_true=self.labels[self.train_indices],
-                                          y_pred=self.train_pred,
-                                          **metric_kwargs)
+                                              y_pred=self.pred[self.train_indices],
+                                              **metric_kwargs)
         test_score = metric_module.score(y_true=self.labels[self.test_indices],
-                                         y_pred=self.test_pred,
-                                         **metric_kwargs)
-        return train_score, test_score
+                                              y_pred=self.pred[self.test_indices],
+                                              **metric_kwargs)
+        return class_train_scores, class_test_scores, train_score, test_score
 
     def print_metric_score(self,):
         """
@@ -262,13 +279,21 @@ class ResultAnalyser():
         metric_score_string string formatting all metric results
         """
         metric_score_string = "\n\n"
-        for metric, metric_kwargs in self.metrics_list:
-            metric_module = getattr(metrics, metric)
+        for metric, metric_kwargs in self.metrics_dict.items():
+            if metric.endswith("*"):
+                metric_module = getattr(metrics, metric[:-1])
+            else:
+                metric_module = getattr(metrics, metric)
             metric_score_string += "\tFor {} : ".format(metric_module.get_config(
                 **metric_kwargs))
             metric_score_string += "\n\t\t- Score on train : {}".format(self.metric_scores[metric][0])
             metric_score_string += "\n\t\t- Score on test : {}".format(self.metric_scores[metric][1])
             metric_score_string += "\n\n"
+        metric_score_string += "Test set confusion matrix : \n\n"
+        self.confusion_matrix = confusion(y_true=self.labels[self.test_indices], y_pred=self.pred[self.test_indices])
+        formatted_conf = [[label_name]+list(row) for label_name, row in zip(self.class_label_names, self.confusion_matrix)]
+        metric_score_string+=tabulate(formatted_conf, headers= ['']+self.class_label_names, tablefmt='fancy_grid')
+        metric_score_string += "\n\n"
         return metric_score_string
 
     @abstractmethod
@@ -341,7 +366,8 @@ class ResultAnalyser():
             self.directory, self.base_file_name,
             self.labels[self.test_indices])
         image_analysis = {}
-        return string_analysis, image_analysis, self.metric_scores
+        return string_analysis, image_analysis, self.metric_scores, \
+               self.class_metric_scores, self.confusion_matrix
 
 
 base_boosting_estimators = [DecisionTreeClassifier(max_depth=1),

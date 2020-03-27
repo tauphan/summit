@@ -71,7 +71,8 @@ def init_constants(kwargs, classification_indices, metrics,
            directory, base_file_name
 
 
-def save_results(string_analysis, images_analysis, output_file_name):
+def save_results(string_analysis, images_analysis, output_file_name,
+                 confusion_matrix):
     """
     Save results in derectory
 
@@ -104,6 +105,8 @@ def save_results(string_analysis, images_analysis, output_file_name):
     output_text_file = open(output_file_name + 'summary.txt', 'w')
     output_text_file.write(string_analysis)
     output_text_file.close()
+    np.savetxt(output_file_name+"confusion_matrix.csv", confusion_matrix,
+               delimiter=',')
 
     if images_analysis is not None:
         for image_name in images_analysis.keys():
@@ -311,9 +314,9 @@ def exec_multiview(directory, dataset_var, name, classification_indices,
                                           example_indices=validation_indices,
                                           view_indices=views_indices)
     pred_duration = time.monotonic() - pred_beg
-    full_labels = np.zeros(dataset_var.get_labels().shape, dtype=int) - 100
-    full_labels[learning_indices] = train_pred
-    full_labels[validation_indices] = test_pred
+    full_pred = np.zeros(dataset_var.get_labels().shape, dtype=int) - 100
+    full_pred[learning_indices] = train_pred
+    full_pred[validation_indices] = test_pred
     logging.info("Done:\t Pertidcting")
 
     whole_duration = time.time() - t_start
@@ -329,24 +332,24 @@ def exec_multiview(directory, dataset_var, name, classification_indices,
                                               classification_indices=classification_indices,
                                               k_folds=k_folds,
                                               hps_method=hps_method,
-                                              metrics_list=metrics,
+                                              metrics_dict=metrics,
                                               n_iter=n_iter,
                                               class_label_names=list(labels_dictionary.values()),
-                                              train_pred=train_pred,
-                                              test_pred=test_pred,
+                                              pred=full_pred,
                                               directory=directory,
                                               base_file_name=base_file_name,
                                               labels=labels,
                                               database_name=dataset_var.get_name(),
                                               nb_cores=nb_cores,
                                               duration=whole_duration)
-    string_analysis, images_analysis, metrics_scores = result_analyzer.analyze()
+    string_analysis, images_analysis, metrics_scores, class_metrics_scores, \
+    confusion_matrix = result_analyzer.analyze()
     logging.info("Done:\t Result Analysis for " + cl_type)
 
     logging.debug("Start:\t Saving preds")
-    save_results(string_analysis, images_analysis, output_file_name)
+    save_results(string_analysis, images_analysis, output_file_name, confusion_matrix)
     logging.debug("Start:\t Saving preds")
 
     return MultiviewResult(cl_type, classifier_config, metrics_scores,
-                           full_labels, hps_duration, fit_duration,
-                           pred_duration)
+                           full_pred, hps_duration, fit_duration,
+                           pred_duration, class_metrics_scores)

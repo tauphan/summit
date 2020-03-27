@@ -1,6 +1,8 @@
 from abc import abstractmethod
 
 import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.base import BaseEstimator
 
 from .. import monoview_classifiers
 from ..utils.base import BaseClassifier, ResultAnalyser
@@ -30,6 +32,34 @@ class BaseMultiviewClassifier(BaseClassifier):
         self.short_name = self.__module__.split(".")[-1]
         self.weird_strings = {}
         self.used_views = None
+
+    def set_base_estim_from_dict(self, base_estim_dict, **kwargs):
+        if base_estim_dict is None:
+            base_estimator = DecisionTreeClassifier()
+        elif isinstance(base_estim_dict, str) and kwargs is not None:
+            estim_name = base_estim_dict
+            estim_module = getattr(monoview_classifiers, estim_name)
+            estim_class = getattr(estim_module,
+                                  estim_module.classifier_class_name)
+            base_estim_params = {}
+            for key, value in kwargs.items():
+                key, delim, sub_key = key.partition('__')
+                if key == "base_estimator":
+                    base_estim_params[sub_key] = value
+            base_estimator = estim_class(**base_estim_params)
+        elif isinstance(base_estim_dict, dict):
+            estim_name = next(iter(base_estim_dict))
+            estim_module = getattr(monoview_classifiers, estim_name)
+            estim_class = getattr(estim_module,
+                                  estim_module.classifier_class_name)
+            base_estimator = estim_class(**base_estim_dict[estim_name])
+        elif isinstance(base_estim_dict, BaseEstimator):
+            base_estimator = base_estim_dict
+        else:
+            raise ValueError("base_estimator should be either None, a dictionary"
+                             " or a BaseEstimator child object, "
+                             "here it is {}".format(type(base_estim_dict)))
+        return base_estimator
 
     @abstractmethod
     def fit(self, X, y, train_indices=None, view_indices=None):
@@ -62,7 +92,7 @@ class BaseMultiviewClassifier(BaseClassifier):
                             n_classes=3, n_views=2):
         if int(n_samples / n_classes) < 1:
             raise ValueError(
-                "n_samples ({}) / n_classe ({}) must be over 1".format(
+                "n_samples ({}) / n_classes ({}) must be over 1".format(
                     n_samples,
                     n_classes))
         fake_mc_X = RAMDataset(
@@ -152,7 +182,7 @@ from .. import multiview_classifiers
 class MultiviewResult(object):
     def __init__(self, classifier_name, classifier_config,
                  metrics_scores, full_labels, hps_duration, fit_duration,
-                 pred_duration):
+                 pred_duration, class_metric_scores):
         self.classifier_name = classifier_name
         self.classifier_config = classifier_config
         self.metrics_scores = metrics_scores
@@ -160,6 +190,7 @@ class MultiviewResult(object):
         self.hps_duration = hps_duration
         self.fit_duration = fit_duration
         self.pred_duration = pred_duration
+        self.class_metric_scores = class_metric_scores
 
     def get_classifier_name(self):
         try:
@@ -176,14 +207,14 @@ class MultiviewResult(object):
 class MultiviewResultAnalyzer(ResultAnalyser):
 
     def __init__(self, view_names, classifier, classification_indices, k_folds,
-                 hps_method, metrics_list, n_iter, class_label_names,
-                 train_pred, test_pred, directory, base_file_name, labels,
+                 hps_method, metrics_dict, n_iter, class_label_names,
+                 pred, directory, base_file_name, labels,
                  database_name, nb_cores, duration):
         if hps_method.endswith("equiv"):
             n_iter = n_iter*len(view_names)
         ResultAnalyser.__init__(self, classifier, classification_indices, k_folds,
-                                hps_method, metrics_list, n_iter, class_label_names,
-                                train_pred, test_pred, directory,
+                                hps_method, metrics_dict, n_iter, class_label_names,
+                                pred, directory,
                                 base_file_name, labels, database_name,
                                 nb_cores, duration)
         self.classifier_name = classifier.short_name

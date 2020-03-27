@@ -501,7 +501,7 @@ def arange_metrics(metrics, metric_princ):
 
     Parameters
     ----------
-    metrics : list of lists
+    metrics : dict
         The metrics that will be used in the benchmark
 
     metric_princ : str
@@ -512,13 +512,11 @@ def arange_metrics(metrics, metric_princ):
     -------
     metrics : list of lists
         The metrics list, but arranged  so the first one is the principal one."""
-    if [metric_princ] in metrics:
-        metric_index = metrics.index([metric_princ])
-        first_metric = metrics[0]
-        metrics[0] = [metric_princ]
-        metrics[metric_index] = first_metric
+    if metric_princ in metrics:
+        metrics = dict((key, value) if not key==metric_princ else (key+"*", value) for key, value in metrics.items())
     else:
-        raise AttributeError(metric_princ + " not in metric pool")
+        raise AttributeError("{} not in metric pool ({})".format(metric_princ,
+                                                                 metrics))
     return metrics
 
 
@@ -874,8 +872,8 @@ def exec_classif(arguments):
     dataset_list = execution.find_dataset_names(args["pathf"],
                                                 args["file_type"],
                                                 args["name"])
-    if not args["add_noise"]:
-        args["noise_std"] = [0.0]
+    # if not args["add_noise"]:
+        # args["noise_std"] = [0.0]
     for dataset_name in dataset_list:
         noise_results = []
         for noise_std in args["noise_std"]:

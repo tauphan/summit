@@ -5,6 +5,7 @@ from multimodal.boosting.cumbo import MuCumboClassifier
 from ..multiview.multiview_utils import BaseMultiviewClassifier
 from ..utils.hyper_parameter_search import CustomRandint
 from ..utils.dataset import get_examples_views_indices
+from ..utils.base import base_boosting_estimators
 
 classifier_class_name = "MuCumbo"
 
@@ -13,13 +14,14 @@ class MuCumbo(BaseMultiviewClassifier, MuCumboClassifier):
 
     def __init__(self, base_estimator=None,
                  n_estimators=50,
-                 random_state=None,):
+                 random_state=None,**kwargs):
         BaseMultiviewClassifier.__init__(self, random_state)
+        base_estimator = self.set_base_estim_from_dict(base_estimator, **kwargs)
         MuCumboClassifier.__init__(self, base_estimator=base_estimator,
                                     n_estimators=n_estimators,
                                     random_state=random_state,)
         self.param_names = ["base_estimator", "n_estimators", "random_state",]
-        self.distribs = [[DecisionTreeClassifier(max_depth=1)],
+        self.distribs = [base_boosting_estimators,
                          CustomRandint(5,200), [random_state],]
 
     def fit(self, X, y, train_indices=None, view_indices=None):
@@ -40,3 +42,7 @@ class MuCumbo(BaseMultiviewClassifier, MuCumboClassifier):
         numpy_X, view_limits = X.to_numpy_array(example_indices=example_indices,
                                                 view_indices=view_indices)
         return MuCumboClassifier.predict(self, numpy_X)
+
+    def get_interpretation(self, directory, base_file_name, labels,
+                           multiclass=False):
+        return ""

@@ -53,7 +53,7 @@ def exec_monoview_multicore(directory, name, labels_names,
 def exec_monoview(directory, X, Y, database_name, labels_names, classification_indices,
                   k_folds, nb_cores, databaseType, path,
                   random_state, hyper_param_search="randomized_search",
-                  metrics=[["accuracy_score", None]], n_iter=30, view_name="",
+                  metrics={"accuracy_score":{}}, n_iter=30, view_name="",
                   hps_kwargs={}, **args):
     logging.debug("Start:\t Loading data")
     kwargs, \
@@ -140,30 +140,30 @@ def exec_monoview(directory, X, Y, database_name, labels_names, classification_i
                                              classification_indices=classification_indices,
                                              k_folds=k_folds,
                                              hps_method=hyper_param_search,
-                                             metrics_list=metrics,
+                                             metrics_dict=metrics,
                                              n_iter=n_iter,
                                              class_label_names=labels_names,
-                                             train_pred=train_pred,
-                                             test_pred=test_pred,
+                                             pred=full_pred,
                                              directory=directory,
                                              base_file_name=base_file_name,
                                              labels=Y,
                                              database_name=database_name,
                                              nb_cores=nb_cores,
                                              duration=whole_duration)
-    string_analysis, images_analysis, metrics_scores = result_analyzer.analyze()
+    string_analysis, images_analysis, metrics_scores, class_metrics_scores, \
+    confusion_matrix = result_analyzer.analyze()
     logging.debug("Done:\t Getting results")
 
     logging.debug("Start:\t Saving preds")
     save_results(string_analysis, output_file_name, full_pred, train_pred,
-                 y_train, images_analysis, y_test)
+                 y_train, images_analysis, y_test, confusion_matrix)
     logging.info("Done:\t Saving results")
 
     view_index = args["view_index"]
     return MonoviewResult(view_index, classifier_name, view_name,
                           metrics_scores, full_pred, cl_kwargs,
                           classifier, X_train.shape[1],
-                          hyper_param_duration, fit_duration, pred_duration)
+                          hyper_param_duration, fit_duration, pred_duration, class_metrics_scores)
 
 
 def init_constants(args, X, classification_indices, labels_names,
@@ -223,11 +223,13 @@ def get_hyper_params(classifier_module, search_method, classifier_module_name,
 
 def save_results(string_analysis, output_file_name, full_labels_pred,
                  y_train_pred,
-                 y_train, images_analysis, y_test):
+                 y_train, images_analysis, y_test, confusion_matrix):
     logging.info(string_analysis)
     output_text_file = open(output_file_name + 'summary.txt', 'w')
     output_text_file.write(string_analysis)
     output_text_file.close()
+    np.savetxt(output_file_name+"confusion_matrix.csv", confusion_matrix,
+               delimiter=', ')
     np.savetxt(output_file_name + "full_pred.csv",
                full_labels_pred.astype(np.int16), delimiter=",")
     np.savetxt(output_file_name + "train_pred.csv",
