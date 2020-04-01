@@ -1,7 +1,8 @@
+import warnings
+
 from sklearn.metrics import make_scorer
 from sklearn.metrics import roc_auc_score as metric
 from sklearn.preprocessing import MultiLabelBinarizer
-import warnings
 
 warnings.warn("the roc_auc_score module  is deprecated", DeprecationWarning,
               stacklevel=2)
@@ -11,17 +12,6 @@ __status__ = "Prototype"  # Production, Development, Prototype
 
 
 def score(y_true, y_pred, multiclass=False, **kwargs):
-    try:
-        sample_weight = kwargs["0"]
-    except Exception :
-        sample_weight = None
-    try:
-        average = kwargs["1"]
-    except Exception:
-        if multiclass:
-            average = "micro"
-        else:
-            average = None
     if multiclass:
         mlb = MultiLabelBinarizer()
         y_true = mlb.fit_transform([(label) for label in y_true])
@@ -44,7 +34,7 @@ def get_scorer(**kwargs):
                        sample_weight=sample_weight, average=average)
 
 
-def getConfig(**kwargs):
+def get_config(**kwargs):
     try:
         sample_weight = kwargs["0"]
     except:

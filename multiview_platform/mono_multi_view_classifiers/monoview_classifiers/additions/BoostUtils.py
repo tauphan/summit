@@ -829,7 +829,7 @@ def get_accuracy_graph(plotted_data, classifier_name, file_name,
                        name="Accuracies", bounds=None, bound_name=None,
                        boosting_bound=None, set="train", zero_to_one=True):
     if type(name) is not str:
-        name = " ".join(name.getConfig().strip().split(" ")[:2])
+        name = " ".join(name.get_config().strip().split(" ")[:2])
     f, ax = plt.subplots(nrows=1, ncols=1)
     if zero_to_one:
         ax.set_ylim(bottom=0.0, top=1.0)

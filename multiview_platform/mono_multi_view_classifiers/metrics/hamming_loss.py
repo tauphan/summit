@@ -1,6 +1,7 @@
+import warnings
+
 from sklearn.metrics import hamming_loss as metric
 from sklearn.metrics import make_scorer
-import warnings
 
 warnings.warn("the hamming_loss module  is deprecated", DeprecationWarning,
               stacklevel=2)
@@ -10,27 +11,14 @@ __status__ = "Prototype"  # Production, Development, Prototype
 
 
 def score(y_true, y_pred, multiclass=False, **kwargs):
-    try:
-        classes = kwargs["0"]
-    except Exception:
-        classes = None
-    score = metric(y_true, y_pred)
+    score = metric(y_true, y_pred, **kwargs)
     return score
 
 
 def get_scorer(**kwargs):
-    try:
-        classes = kwargs["0"]
-    except Exception:
-        classes = None
-    return make_scorer(metric, greater_is_better=False, classes=classes)
+    return make_scorer(metric, greater_is_better=False, **kwargs)
 
 
-def getConfig(**kwargs):
-    try:
-        classes = kwargs["0"]
-    except Exception:
-        classes = None
-    config_string = "Hamming loss using " + str(
-        classes) + " as classes (lower is better)"
+def get_config(**kwargs):
+    config_string = "Hamming loss using {} (lower is better)".format(kwargs)
     return config_string

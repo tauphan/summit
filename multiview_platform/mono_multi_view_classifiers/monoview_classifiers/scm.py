@@ -8,39 +8,7 @@ __author__ = "Baptiste Bauvin"
 __status__ = "Prototype"  # Production, Development, Prototype
 
 
-# class DecisionStumpSCMNew(scm, BaseEstimator, ClassifierMixin):
-#     """docstring for SCM
-#     A hands on class of SCM using decision stump, built with sklearn format in order to use sklearn function on SCM like
-#     CV, gridsearch, and so on ..."""
-#
-#     def __init__(self, model_type='conjunction', p=0.1, max_rules=10, random_state=42):
-#         super(DecisionStumpSCMNew, self).__init__(model_type=model_type, max_rules=max_rules, p=p, random_state=random_state)
-#         # self.model_type = model_type
-#         # self.p = p
-#         # self.max_rules = max_rules
-#         # self.random_state = random_state
-#         # self.clf = scm(model_type=self.model_type, max_rules=self.max_rules, p=self.p, random_state=self.random_state)
-#
-#     # def fit(self, X, y):
-#     #     print(self.clf.model_type)
-#     #     self.clf.fit(X=X, y=y)
-#     #
-#     # def predict(self, X):
-#     #     return self.clf.predict(X)
-#     #
-#     # def set_params(self, **params):
-#     #     for key, value in iteritems(params):
-#     #         if key == 'p':
-#     #             self.p = value
-#     #         if key == 'model_type':
-#     #             self.model_type = value
-#     #         if key == 'max_rules':
-#     #             self.max_rules = value
-#
-#     # def get_stats(self):
-#     #     return {"Binary_attributes": self.clf.model_.rules}
-
-
+# class Decis
 classifier_class_name = "SCM"
 
 class SCM(scm, BaseMonoviewClassifier):
@@ -102,7 +70,7 @@ class SCM(scm, BaseMonoviewClassifier):
     #     """
     #     return False
 
-    def getInterpret(self, directory, y_test):
+    def get_interpretation(self, directory, y_test, multi_class=False):
         interpretString = "Model used : " + str(self.model_)
         return interpretString
 

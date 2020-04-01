@@ -71,7 +71,6 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
         self.mincq_tracking = mincq_tracking
 
     def fit(self, X, y):
-
         formatted_X, formatted_y = self.format_X_y(X, y)
 
         self.init_info_containers()

@@ -1,0 +1,34 @@
+# The base configuration of the benchmark
+log: True
+name: ["digits"]
+label: "_"
+file_type: ".hdf5"
+views:
+pathf: "/home/baptiste/Documents/Datasets/Digits/"
+nice: 0
+random_state: 42
+nb_cores: 1
+full: False
+debug: True
+add_noise: False
+noise_std: 0.0
+res_dir: "../results/"
+track_tracebacks: False
+
+# All the classification-realted configuration options
+multiclass_method: "oneVersusOne"
+split: 0.75
+nb_folds: 5
+nb_class: 2
+classes:
+type: ["multiview",]
+algos_monoview: ["group_scm",]
+algos_multiview: ["group_scm"]
+stats_iter: 2
+metrics:
+  accuracy_score: {}
+  f1_score:
+    average: 'micro'
+metric_princ: "accuracy_score"
+hps_type: "None"
+hps_args: {}

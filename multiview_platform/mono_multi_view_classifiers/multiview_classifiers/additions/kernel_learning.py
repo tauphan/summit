@@ -1,23 +1,24 @@
 from sklearn.metrics import pairwise
 import numpy as np
 
-from ...multiview.multiview_utils import BaseMultiviewClassifier, get_examples_views_indices
+from ...multiview.multiview_utils import BaseMultiviewClassifier
 from ...utils.hyper_parameter_search import CustomUniform, CustomRandint
 from ...utils.transformations import sign_labels, unsign_labels
+from ...utils.dataset import get_examples_views_indices
 
 class KernelClassifier(BaseMultiviewClassifier):
 
     def __init__(self, random_state=None,):
         super().__init__(random_state)
 
-    def _compute_kernels(self, X, example_indices, view_indices, ):
-        new_X = {}
-        for index, (kernel_function, kernel_config, view_index) in enumerate(
-                zip(self.kernel_functions, self.kernel_configs, view_indices)):
-            new_X[index] = kernel_function(X.get_v(view_index,
-                                                   example_indices),
-                                           **kernel_config)
-        return new_X
+    # def _compute_kernels(self, X, example_indices, view_indices, ):
+    #     new_X = {}
+    #     for index, (kernel_function, kernel_config, view_index) in enumerate(
+    #             zip(self.kernel_functions, self.kernel_configs, view_indices)):
+    #         new_X[index] = kernel_function(X.get_v(view_index,
+    #                                                example_indices),
+    #                                        **kernel_config)
+    #     return new_X
 
     def format_X(self, X, example_indices, view_indices):
         example_indices, view_indices = get_examples_views_indices(X,

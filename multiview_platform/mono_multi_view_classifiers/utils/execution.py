@@ -21,7 +21,8 @@ def parse_the_args(arguments):
         fromfile_prefix_chars='@')
 
     groupStandard = parser.add_argument_group('Standard arguments')
-    groupStandard.add_argument('--config_path', metavar='STRING', action='store',
+    groupStandard.add_argument('--config_path', metavar='STRING',
+                               action='store',
                                help='Path to the hdf5 dataset or database '
                                     'folder (default: %(default)s)',
                                default='../config_files/config.yml')
@@ -118,7 +119,7 @@ def get_database_function(name, type_var):
 
 
 def init_log_file(name, views, cl_type, log, debug, label,
-                  result_directory, add_noise, noise_std, args):
+                  result_directory, args):
     r"""Used to init the directory where the preds will be stored and the log file.
 
     First this function will check if the result directory already exists (only one per minute is allowed).
@@ -151,16 +152,20 @@ def init_log_file(name, views, cl_type, log, debug, label,
         Reference to the main results directory for the benchmark.
     """
     if views is None:
-        views=[]
-    noise_string = "n_"+str(int(noise_std*100))
-    result_directory = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))), result_directory)
+        views = []
+    result_directory = os.path.join(os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
+                                    result_directory)
     if debug:
-        result_directory = os.path.join(result_directory, name, noise_string,
-                           "debug_started_" + time.strftime("%Y_%m_%d-%H_%M_%S") + "_" + label)
+        result_directory = os.path.join(result_directory, name,
+                                        "debug_started_" + time.strftime(
+                                            "%Y_%m_%d-%H_%M_%S") + "_" + label)
     else:
-        result_directory = os.path.join(result_directory, name,  noise_string,
-                                        "started_" + time.strftime("%Y_%m_%d-%H_%M") + "_" + label)
-    log_file_name = time.strftime("%Y_%m_%d-%H_%M") + "-" + ''.join(cl_type) + "-" + "_".join(views) + "-" + name + "-LOG.log"
+        result_directory = os.path.join(result_directory, name,
+                                        "started_" + time.strftime(
+                                            "%Y_%m_%d-%H_%M") + "_" + label)
+    log_file_name = time.strftime("%Y_%m_%d-%H_%M") + "-" + ''.join(
+        cl_type) + "-" + "_".join(views) + "-" + name + "-LOG.log"
     if os.path.exists(result_directory):
         raise NameError("The result dir already exists, wait 1 min and retry")
     log_file_path = os.path.join(result_directory, log_file_name)
@@ -236,7 +241,7 @@ def gen_k_folds(stats_iter, nb_folds, stats_iter_random_states):
         if isinstance(stats_iter_random_states, list):
             stats_iter_random_states = stats_iter_random_states[0]
         folds_list = [sklearn.model_selection.StratifiedKFold(n_splits=nb_folds,
-                                                             random_state=stats_iter_random_states,
+                                                              random_state=stats_iter_random_states,
                                                               shuffle=True)]
     return folds_list
 
@@ -265,9 +270,9 @@ def init_views(dataset_var, arg_views):
     if arg_views is not None:
         allowed_views = arg_views
         all_views = [str(dataset_var.get_view_name(view_index))
-                    if type(dataset_var.get_view_name(view_index)) != bytes
-                    else dataset_var.get_view_name(view_index).decode("utf-8")
-                    for view_index in range(nb_view)]
+                     if type(dataset_var.get_view_name(view_index)) != bytes
+                     else dataset_var.get_view_name(view_index).decode("utf-8")
+                     for view_index in range(nb_view)]
         views = []
         views_indices = []
         for view_index in range(nb_view):
@@ -314,24 +319,33 @@ def gen_direcorties_names(directory, stats_iter):
 def find_dataset_names(path, type, names):
     """This function goal is to browse the dataset directory and extrats all
      the needed dataset names."""
-    module_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    module_path = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
     available_file_names = [file_name.strip().split(".")[0]
-                            for file_name in os.listdir(os.path.join(module_path, path))
+                            for file_name in
+                            os.listdir(os.path.join(module_path, path))
                             if file_name.endswith(type)]
     if names == ["all"]:
         return available_file_names
-    elif len(names)>1:
-        return [used_name for used_name in available_file_names if used_name in names]
+    elif len(names) > 1:
+        selected_names = [used_name for used_name in available_file_names if
+                          used_name in names]
+        if not selected_names:
+            raise ValueError(
+                "None of the provided dataset names are available. Available datasets are {}".format(
+                    available_file_names))
+        return [used_name for used_name in available_file_names if
+                used_name in names]
     else:
         return names
 
 
-def gen_argument_dictionaries(labels_dictionary, directories, multiclass_labels,
-                              labels_combinations, indices_multiclass,
+def gen_argument_dictionaries(labels_dictionary, directories,
+                              splits,
                               hyper_param_search, args, k_folds,
                               stats_iter_random_states, metrics,
                               argument_dictionaries,
-                              benchmark, nb_views, views, views_indices):
+                              benchmark, views, views_indices,):
     r"""Used to generate a dictionary for each benchmark.
 
     One for each label combination (if multiclass), for each statistical iteration, generates an dictionary with
@@ -379,30 +393,20 @@ def gen_argument_dictionaries(labels_dictionary, directories, multiclass_labels,
 
     """
     benchmark_argument_dictionaries = []
-    for combination_index, labels_combination in enumerate(labels_combinations):
-        for iter_index, iterRandomState in enumerate(stats_iter_random_states):
-            benchmark_argument_dictionary = {
-                "labels_dictionary": {0: labels_dictionary[labels_combination[0]],
-                                      1: labels_dictionary[
-                                          labels_combination[1]]},
-                "directory": os.path.join(directories[iter_index],
-                             labels_dictionary[labels_combination[0]] +
-                             "-vs-" +
-                             labels_dictionary[labels_combination[1]]),
-                "classification_indices": [
-                    indices_multiclass[combination_index][0][iter_index],
-                    indices_multiclass[combination_index][1][iter_index],
-                    indices_multiclass[combination_index][2][iter_index]],
-                "args": args,
-                "labels": multiclass_labels[combination_index],
-                "k_folds": k_folds[iter_index],
-                "random_state": iterRandomState,
-                "hyper_param_search": hyper_param_search,
-                "metrics": metrics,
-                "argument_dictionaries": argument_dictionaries,
-                "benchmark": benchmark,
-                "views": views,
-                "views_indices": views_indices,
-                "flag": [iter_index, labels_combination]}
-            benchmark_argument_dictionaries.append(benchmark_argument_dictionary)
+    for iter_index, iterRandomState in enumerate(stats_iter_random_states):
+        benchmark_argument_dictionary = {
+            "labels_dictionary": labels_dictionary,
+            "directory": directories[iter_index],
+            "classification_indices": splits[iter_index],
+            "args": args,
+            "k_folds": k_folds[iter_index],
+            "random_state": iterRandomState,
+            "hyper_param_search": hyper_param_search,
+            "metrics": metrics,
+            "argument_dictionaries": argument_dictionaries,
+            "benchmark": benchmark,
+            "views": views,
+            "views_indices": views_indices,
+            "flag": iter_index}
+        benchmark_argument_dictionaries.append(benchmark_argument_dictionary)
     return benchmark_argument_dictionaries

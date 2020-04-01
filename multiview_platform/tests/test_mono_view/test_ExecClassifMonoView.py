@@ -41,20 +41,22 @@ class Test_initConstants(unittest.TestCase):
         X, \
         learningRate, \
         labelsString, \
-        outputFileName = exec_classif_mono_view.initConstants(cls.args,
-                                                              cls.X,
-                                                              cls.classification_indices,
-                                                              cls.labels_names,
-                                                              cls.name,
-                                                              cls.directory,
-                                                              cls.view_name)
+        output_file_name,\
+        directory,\
+        base_file_name = exec_classif_mono_view.init_constants(cls.args,
+                                                               cls.X,
+                                                               cls.classification_indices,
+                                                               cls.labels_names,
+                                                               cls.name,
+                                                               cls.directory,
+                                                               cls.view_name)
         cls.assertEqual(kwargs, cls.args)
         cls.assertEqual(feat, "test_dataset")
         cls.assertEqual(CL_type, "test_clf")
         np.testing.assert_array_equal(X, cls.X_value)
         cls.assertEqual(learningRate, 0.5)
         cls.assertEqual(labelsString, "test_true-test_false")
-        # cls.assertEqual(outputFileName, "Code/tests/temp_tests/test_dir/test_clf/test_dataset/results-test_clf-test_true-test_false-learnRate0.5-test-test_dataset-")
+        # cls.assertEqual(output_file_name, "Code/tests/temp_tests/test_dir/test_clf/test_dataset/results-test_clf-test_true-test_false-learnRate0.5-test-test_dataset-")
 
     @classmethod
     def tearDownClass(cls):
@@ -76,10 +78,10 @@ class Test_initTrainTest(unittest.TestCase):
         cls.Y = cls.random_state.randint(0, 2, 10)
         cls.classification_indices = [np.array([0, 2, 4, 6, 8]),
                                      np.array([1, 3, 5, 7, 9]),
-                                     np.array([1, 3, 5, 7, 9])]
+                                   ]
 
     def test_simple(cls):
-        X_train, y_train, X_test, y_test, X_test_multiclass = exec_classif_mono_view.init_train_test(
+        X_train, y_train, X_test, y_test = exec_classif_mono_view.init_train_test(
             cls.X, cls.Y, cls.classification_indices)
 
         np.testing.assert_array_equal(X_train, np.array(
@@ -105,20 +107,20 @@ class Test_getHPs(unittest.TestCase):
         rm_tmp()
         os.mkdir(tmp_path)
         cls.classifierModule = decision_tree
-        cls.hyper_param_search = "randomized_search"
-        cls.n_iter = 2
+        cls.hyper_param_search = "Random"
         cls.classifier_name = "decision_tree"
         cls.random_state = np.random.RandomState(42)
         cls.X = cls.random_state.randint(0,10,size=(10,5))
         cls.y = cls.random_state.randint(0,2,size=10)
         cls.output_file_name = tmp_path
-        cls.cv = StratifiedKFold(n_splits=2, random_state=cls.random_state)
+        cls.cv = StratifiedKFold(n_splits=2, random_state=cls.random_state, shuffle=True)
         cls.nb_cores = 1
-        cls.metrics = [["accuracy_score", None]]
+        cls.metrics = {"accuracy_score*": {}}
         cls.kwargs = {"decision_tree" : {"max_depth": 1,
                       "criterion": "gini",
                       "splitter": "best"}}
         cls.classifier_class_name = "DecisionTree"
+        cls.hps_kwargs = {"n_iter": 2}
 
     @classmethod
     def tearDownClass(cls):
@@ -128,19 +130,19 @@ class Test_getHPs(unittest.TestCase):
         os.rmdir(tmp_path)
 
     def test_simple(self):
-        kwargs, test_folds_predictions = exec_classif_mono_view.getHPs(self.classifierModule,
-                                                                       self.hyper_param_search,
-                                                                       self.n_iter,
-                                                                       self.classifier_name,
-                                                                       self.classifier_class_name,
-                                                                       self.X,
-                                                                       self.y,
-                                                                       self.random_state,
-                                                                       self.output_file_name,
-                                                                       self.cv,
-                                                                       self.nb_cores,
-                                                                       self.metrics,
-                                                                       self.kwargs)
+        kwargs = exec_classif_mono_view.get_hyper_params(self.classifierModule,
+                                                         self.hyper_param_search,
+                                                         self.classifier_name,
+                                                         self.classifier_class_name,
+                                                         self.X,
+                                                         self.y,
+                                                         self.random_state,
+                                                         self.output_file_name,
+                                                         self.cv,
+                                                         self.nb_cores,
+                                                         self.metrics,
+                                                         self.kwargs,
+                                                         **self.hps_kwargs)
 
 # class Test_getKWARGS(unittest.TestCase):
 #

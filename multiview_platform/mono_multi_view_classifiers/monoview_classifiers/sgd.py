@@ -8,6 +8,7 @@ __status__ = "Prototype"  # Production, Development, Prototype
 
 classifier_class_name = "SGD"
 
+
 class SGD(SGDClassifier, BaseMonoviewClassifier):
     """
 
@@ -36,67 +37,20 @@ class SGD(SGDClassifier, BaseMonoviewClassifier):
     weird_strings :
 
     """
+
     def __init__(self, random_state=None, loss='hinge',
                  penalty='l2', alpha=0.0001, max_iter=5, tol=None, **kwargs):
-
-        super(SGD, self).__init__(
-            loss=loss,
-            penalty=penalty,
-            alpha=alpha,
-            max_iter=5,
-            tol=None,
-            random_state=random_state
-        )
+        SGDClassifier.__init__(self,
+                               loss=loss,
+                               penalty=penalty,
+                               alpha=alpha,
+                               max_iter=5,
+                               tol=None,
+                               random_state=random_state
+                               )
         self.param_names = ["loss", "penalty", "alpha", "random_state"]
         self.classed_params = []
         self.distribs = [['log', 'modified_huber'],
                          ["l1", "l2", "elasticnet"],
                          CustomUniform(loc=0, state=1), [random_state]]
         self.weird_strings = {}
-
-    # def canProbas(self):
-    #     """
-    #     Used to know if the classifier can return label probabilities
-    #
-    #     Returns
-    #     -------
-    #     return True in all case
-    #     """
-    #
-    #     return True
-
-    def getInterpret(self, directory, y_test):
-        """
-
-        Parameters
-        ----------
-        directory
-
-        y_test
-
-        Returns
-        -------
-        interpret_string str to interpreted
-        """
-        interpret_string = ""
-        import numpy as np
-        # self.feature_importances_ = (self.coef_/np.sum(self.coef_)).reshape(self.coef_.shape[1])
-        return interpret_string
-
-
-# def formatCmdArgs(args):
-#     """Used to format kwargs for the parsed args"""
-#     kwargsDict = {"loss": args.SGD_loss,
-#                   "penalty": args.SGD_penalty,
-#                   "alpha": args.SGD_alpha}
-#     return kwargsDict
-
-
-def paramsToSet(nIter, random_state):
-    paramsSet = []
-    for _ in range(nIter):
-        paramsSet.append({"loss": random_state.choice(['log', 'modified_huber']),
-                          "penalty": random_state.choice(
-                              ["l1", "l2", "elasticnet"]),
-                          "alpha": random_state.random_sample()})
-    return paramsSet

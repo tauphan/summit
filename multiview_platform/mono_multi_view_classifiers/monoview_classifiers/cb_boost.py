@@ -60,7 +60,7 @@ class CBBoost(CBBoostClassifier, BaseMonoviewClassifier):
     #     return True
 
 
-    def getInterpret(self, directory, y_test):
+    def get_interpretation(self, directory, y_test, multi_class=False):
         """
         return interpretation string
 
