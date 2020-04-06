@@ -121,7 +121,7 @@ html_theme = 'classic'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path = ["_static/"]
 
 # -- Options for HTMLHelp output ------------------------------------------
 
@@ -192,8 +192,18 @@ rst_prolog = """
     :language: yaml
     
 .. |platf| replace:: SuMMIT
+
+.. |HP| replace:: hyper-parameter
+
+.. |HPO| replace hyper-parameters optimization
 """
 
 
-extlinks = {'base_source': ('https://gitlab.lis-lab.fr/baptiste.bauvin/multiview-machine-learning-omis/-/tree/master/', "base_source"),
-            'base_doc': ('http://baptiste.bauvin.pages.lis-lab.fr/multiview-machine-learning-omis/', 'base_doc')}
+extlinks = {'base_source': ('https://gitlab.lis-lab.fr/baptiste.bauvin/summit/-/tree/master/', "base_source"),
+            'base_doc': ('http://baptiste.bauvin.pages.lis-lab.fr/summit/', 'base_doc')}
+
+
+
+html_js_files = [
+    'plotly_js.js',
+]
