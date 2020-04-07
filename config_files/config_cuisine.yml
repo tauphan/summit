@@ -1,10 +1,10 @@
 # The base configuration of the benchmark
 log: True
-name: ["digits"]
+name: ["lives_14view_EMF"]
 label: "_"
 file_type: ".hdf5"
 views:
-pathf: "/home/baptiste/Documents/Datasets/Digits/"
+pathf: "/home/baptiste/Documents/Datasets/Alexis/data/"
 nice: 0
 random_state: 42
 nb_cores: 1
@@ -20,15 +20,15 @@ multiclass_method: "oneVersusOne"
 split: 0.75
 nb_folds: 5
 nb_class: 2
-classes:
-type: ["multiview",]
-algos_monoview: ["group_scm",]
+classes: ["multi_clustered", "EMF"]
+type: ["multiview","monoview"]
+algos_monoview: ["scm_mazid", "decision_tree"]
 algos_multiview: ["group_scm"]
 stats_iter: 2
 metrics:
   accuracy_score: {}
   f1_score:
-    average: 'micro'
+    average: 'binary'
 metric_princ: "accuracy_score"
 hps_type: "None"
 hps_args: {}

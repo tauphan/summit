@@ -5,6 +5,7 @@ import logging
 
 import numpy as np
 from six import iteritems
+import pickle
 from pyscm._scm_utility import find_max as find_max_utility  # cpp extensions
 from pyscm.model import ConjunctionModel, DisjunctionModel
 from pyscm.rules import DecisionStump
@@ -49,7 +50,7 @@ class GroupSetCoveringMachineClassifier(BaseSetCoveringMachine):
         """
         self.features_to_index = features_to_index
         self.prior_rules = np.asarray(prior_rules)
-        self.groups = groups
+        self.groups = pickle.load(open('/home/baptiste/Documents/Clouded/short_projects/pickles_mazid/pathways_multiview_groups.pck', 'rb'))
         self.tiebreaker = tiebreaker
         self.update_method = update_method
         self.groups_rules = []  # GR
@@ -261,7 +262,7 @@ class GroupSCM(BaseMultiviewClassifier):
     CV, gridsearch, and so on ...
     """
 
-    def __init__(self, features_to_index=None, prior_rules=None, update_method=None,
+    def __init__(self, features_to_index=None, prior_rules=None, update_method='inner_group',
                  groups=None, tiebreaker='', model_type='conjunction', p=0.1, max_rules=10,
                  random_state=42):
         super(GroupSCM, self).__init__(random_state)
@@ -269,7 +270,7 @@ class GroupSCM(BaseMultiviewClassifier):
         self.p = p
         self.max_rules = max_rules
         self.random_state = random_state
-        self.features_to_index = features_to_index
+        self.features_to_index = dict((i, "feature_{}".format(i)) for i in range(37325))
         self.prior_rules = prior_rules
         self.groups = groups
         self.tiebreaker = tiebreaker
@@ -303,15 +304,40 @@ class GroupSCM(BaseMultiviewClassifier):
             , axis=1)
         return monoview_data
 
+    def f_1(self,c , x):
+        """Compute an update function"""
+        return np.exp(-c * x)
 
 
     def fit(self, X, y, train_indices=None, view_indices=None):
         train_indices, X = self.transform_data_to_monoview(X, train_indices,
                                                            view_indices)
 
+        dict_pr_group = pickle.load(open("/home/baptiste/Documents/Clouded/short_projects/pickles_mazid/multiview_pathways_dict.pck", 'rb'))
+        dict_pr_rules = pickle.load(open("/home/baptiste/Documents/Clouded/short_projects/pickles_mazid/pathways_multiview_groups.pck", 'rb'))
+        c=0.1
+        inverse_prior_group=False
+        # Build PriorGroups vector, p_g
+        prior_values_dict_pr_group = {k: self.f_1(c, len(v)) for k, v in
+                                      dict_pr_group.items()}
+        for k, v in prior_values_dict_pr_group.items():
+            if v == 0.0:
+                prior_values_dict_pr_group[k] = 1e-10
+
+        # Build PriorRules vector, p_ri
+        if inverse_prior_group:
+            prior_values_dict_pr_rules = {
+                k: self.f_1(c, 1 / prior_values_dict_pr_group[v]) for k, v in
+                dict_pr_rules.items()}
+        else:
+            prior_values_dict_pr_rules = {
+                k: self.f_1(c, prior_values_dict_pr_group[v]) for k, v in
+                dict_pr_rules.items()}
+        prior_rules = [prior_values_dict_pr_rules[name] for name in
+                       self.features_to_index.values()]
         self.clf = GroupSetCoveringMachineClassifier(
             features_to_index=self.features_to_index,
-            prior_rules=self.prior_rules,
+            prior_rules=prior_rules,
             update_method=self.update_method,
             groups=self.groups,
             tiebreaker=self.tiebreaker,
