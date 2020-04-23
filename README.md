@@ -71,6 +71,7 @@ For further information about classifier-specific arguments, see the [documentat
 
 ### Dataset compatibility
 
+
 In order to start a benchmark on your own dataset, you need to format it so SuMMIT can use it. To do so, a [python script](https://gitlab.lis-lab.fr/baptiste.bauvin/summit/-/blob/master/format_dataset.py) is provided.
 
 For more information, see [Example 6](http://baptiste.bauvin.pages.lis-lab.fr/summit/tutorials/example4.html)
@@ -91,8 +92,6 @@ It is highly recommended to follow the documentation's [tutorials](http://baptis
 ## Author
 
 * **Baptiste BAUVIN**
-
-### Contributors
-
 * **Dominique BENIELLI**
 * **Alexis PROD'HOMME**
+

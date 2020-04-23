@@ -3,7 +3,7 @@
 # Enable logging
 log: True
 # The name of each dataset in the directory on which the benchmark should be run
-name: ["doc_summit"]
+name: "doc_summit"
 # A label for the resul directory
 label: "example_1"
 # The type of dataset, currently supported ".hdf5", and ".csv"
@@ -11,7 +11,7 @@ file_type: ".hdf5"
 # The views to use in the banchmark, an empty value will result in using all the views
 views:
 # The path to the directory where the datasets are stored, an absolute path is advised
-pathf: "examples/data/"
+pathf: "examples/data/mkljlj"
 # The niceness of the processes, useful to lower their priority
 nice: 0
 # The random state of the benchmark, useful for reproducibility
@@ -32,7 +32,7 @@ track_tracebacks: True
 # All the classification-realted configuration options
 
 # The ratio of test examples/number of train examples
-split: 0.25
+split: 0.35
 # The nubmer of folds in the cross validation process when hyper-paramter optimization is performed
 nb_folds: 2
 # The number of classes to select in the dataset
@@ -44,7 +44,7 @@ type: ["monoview","multiview"]
 # The name of the monoview algorithms to run, ["all"] to run all the available classifiers
 algos_monoview: ["decision_tree"]
 # The names of the multiview algorithms to run, ["all"] to run all the available classifiers
-algos_multiview: ["weighted_linear_early_fusion", "weighted_linear_late_fusion",]
+algos_multiview: ["weighted_linear_late_fusion",]
 # The number of times the benchamrk is repeated with different train/test
 # split, to have more statistically significant results
 stats_iter: 1
@@ -75,4 +75,4 @@ weighted_linear_late_fusion:
   classifiers_names: "decision_tree"
   classifier_configs:
     decision_tree:
-      max_depth: 2
+      max_depth: 3

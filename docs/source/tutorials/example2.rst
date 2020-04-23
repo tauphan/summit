@@ -32,7 +32,7 @@ In order to use only a subset of the available classifiers, three lines in the c
 
 - :yaml:`type:` (:base_source:`l45 <multiview_platform/examples/config_files/config_example_2_1_1.yml#L45>`) in which one has to specify which type of algorithms are needed, here we used  ``type: ["monoview","multiview"]``,
 - :yaml:`algos_monoview:` (:base_source:`l47 <multiview_platform/examples/config_files/config_example_2_1_1.yml#L45>`) in which one specifies the names of the monoview algorithms to run, here we used : :yaml:`algos_monoview: ["decision_tree", "adaboost", ]`
-- :yaml:`algos_multiview:` (:base_source:`l49 <multiview_platform/examples/config_files/config_example_2_1_1.yml#L45>`) is the same but with multiview algorithms, here we used : :yaml:`algos_multiview: ["majority_voting_fusion", ]`
+- :yaml:`algos_multiview:` (:base_source:`l49 <multiview_platform/examples/config_files/config_example_2_1_1.yml#L45>`) is the same but with multiview algorithms, here we used : :yaml:`algos_multiview: ["weighted_linear_late_fusion", ]`
 
 .. note::
     For the platform to understand the names, the user has to give the **name of the python module** in which the classifier is implemented in the platform.
@@ -58,11 +58,11 @@ For the decision tree :
 
 (`sklearn's decision tree <https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html>`_)
 
-And for the late fusion majority vote :
+And for the late fusion :
 
 .. code-block:: yaml
 
-    majority_voting_fusion:
+    weighted_linear_late_fusion:
         classifier_names: ["decision_tree", ]
         classifier_configs:
             decision_tree:
@@ -77,7 +77,7 @@ Learning on a few examples
 
 This example focuses on one line of the config file :
 
-* :yaml:`split: 0.80`(:base_source:`l37 <multiview_platform/examples/config_files/config_example_2_1_1.yml#L37>`).
+* :yaml:`split: 0.80` (:base_source:`l37 <multiview_platform/examples/config_files/config_example_2_1_1.yml#L37>`).
 
 
 To run the first part of this example, run :
@@ -107,7 +107,7 @@ Now, if you run :
    >>> execute("example 2.1.2")
 
 
-You should obtain these scores in ``multiview_platform/examples/results/example_2_1/doc_summit/`` :
+You should obtain these scores in ``multiview_platform/examples/results/example_2_1_2/doc_summit/`` :
 
 .. raw:: html
     .. :file: images/fake.html
@@ -131,7 +131,7 @@ The split ratio has two consequences :
 Example 2.2 : Usage of randomized hyper-parameter optimization :
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-In the previous example, we have seen that the split ratio has an impact on the train duration and performance of the algorithms, but the most time-consuming task is optimizing their hyper parameters.
+In the previous example, we have seen that the split ratio has an impact on the train duration and performance of the algorithms, but the most impacting option of |platf| on these two factors is optimizing the algorithms hyper parameters.
 
 For all the previous examples, the platform used the hyper-parameters values given in the config file.
 This is only useful if one knows the optimal combination of hyper-parameter for the given task.
@@ -168,9 +168,9 @@ you run |platf| with this combination of arguments (:base_source:`l54-65 <multiv
 
 This means that |platf| will use a modded multiview-compatible version of sklearn's  `RandomisedSearchCV <https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html>`_  with 5 draws and 5 folds of cross validation to optimize the hyper-parameters, according to the accuracy.
 
-Moreover, the :yaml:`equivalent_draws: True` argument means that the multiview classifiers will be granted ``n_iter`` x ``n_views`` draws so, here :math:`5 \times 4 = 20` draws, to compensate the fact that they have a much more complex problem to solve.
+Moreover, the :yaml:`equivalent_draws: True` argument means that the multiview classifiers will be granted ``n_iter`` x ``n_views`` draws so, here 5 x 4 = 20 draws, to compensate the fact that they have a much more complex problem to solve.
 
-The computing time of this run should be longer than the previous examples (approximately 10 mins). While |platf| computes, let's see the pseudo code of the benchmark, while using the hyper-parameter optimization::
+The computing time of this run should be longer than the previous examples (approximately 3 mins). While |platf| computes, let's see the pseudo code of the benchmark, while using the hyper-parameter optimization::
 
     for each monoview classifier:
         for each view:
@@ -217,7 +217,7 @@ The choice made here is to allow a different amount of draws for mono and multiv
 
 .. note::
 
-    The mutliview algorithm used here is late fusion, which means it learns a monoview classifier on each view and then build a naive majority vote. In terms of hyper parameters, the late fusion classifier has to choose one monoview classifier and its HP **for each view**. This is why the :yaml:`equivalent_draws:` parameter is implemented, as with only 5 draws, the late fusion classifier is not able to remotely cover its hyper-parameter space, while the monoview algorithms have a much easier problem to solve.
+    The mutliview algorithm used here is late fusion, which means it learns a monoview classifier on each view and then build a naive majority vote. In terms of hyper parameters, the late fusion classifier has to choose one monoview classifier and its |HP| **for each view**. This is why the :yaml:`equivalent_draws:` parameter is implemented, as with only 5 draws, the late fusion classifier is not able to remotely cover its hyper-parameter space, while the monoview algorithms have a much easier problem to solve.
 
 Conclusion
 >>>>>>>>>>
@@ -229,7 +229,7 @@ For most algorithms the more draws you allow, the closer to ideal the outputted
 hyper-parameter set one will be, however, many draws mean much longer computational time.
 
 Similarly, the number of folds has a great importance in estimating the
-performance of a specific HP set, but more folds take also more time, as one has to train more times and on bigger parts of the dataset.
+performance of a specific |HP| set, but more folds take also more time, as one has to train more times and on bigger parts of the dataset.
 
 The figure below represents the duration of the execution on a personal computer
 with different fold/draws settings :
@@ -247,7 +247,7 @@ with different fold/draws settings :
 
 
 
-Example 2.3 : Usage of grid search :v
+Example 2.3 : Usage of grid search :
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 In |platf|, it is possible to use a grid search if one has several possible
@@ -282,7 +282,7 @@ Moreover, for the multiview algorithms, we would like to try two configurations 
               n_estimators: 10
 
 
-This will try to run the late fusion classifier with either
+This will run the late fusion classifier with either
 
 - one decision tree per view, with a maximum depth of 3,
 - one Adaboost per view with 10 base estimators.
