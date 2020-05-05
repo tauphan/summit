@@ -21,12 +21,14 @@
 import os
 import sys
 
+repo_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('../../multiview_platform'))
-sys.path.insert(0, os.path.abspath('../..'))
-file_loc = os.path.split(__file__)[0]
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(file_loc), '.')))
-# import multiview_platform
+sys.path.insert(0, os.path.join(repo_path, "summit'"))
+sys.path.insert(0, repo_path)
+
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(file_loc), '.')))
+# import summit
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -53,10 +55,19 @@ extensions = ['sphinx.ext.autodoc',
 #              'sphinx.ext.viewcode',
 #              'sphinx.ext.githubpages',
                'sphinx.ext.napoleon',
-               'recommonmark']
+                'autoapi.extension'
+              ]
 
+autoapi_type = 'python'
+autoapi_dirs = [os.path.join(repo_path, "summit", "multiview_platform", "monoview_classifiers", ""),
+                os.path.join(repo_path, "summit", "multiview_platform", "multiview_classifiers", "")]
+autoapi_options = ["members", "show-module-summary", 'undoc-members']
+autoapi_ignore = ["*additions*"]
+autoapi_keep_files = False
+auto_api_add_toctree_entry = False
+autoapi_template_dir = os.path.join(repo_path, "docs", "source", "templates_autoapi")
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ['_templates', 'templates_autoapi']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -121,7 +132,7 @@ html_theme = 'classic'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static/"]
+html_static_path = ["_static"]
 
 # -- Options for HTMLHelp output ------------------------------------------
 
@@ -188,8 +199,11 @@ rst_prolog = """
 .. role:: python(code)
     :language: python
 
-.. role :: yaml(code)
+.. role:: yaml(code)
     :language: yaml
+    
+.. role:: mod(code)
+    :language: python
     
 .. |platf| replace:: SuMMIT
 
@@ -199,8 +213,8 @@ rst_prolog = """
 """
 
 
-extlinks = {'base_source': ('https://gitlab.lis-lab.fr/baptiste.bauvin/summit/-/tree/master/', "base_source"),
-            'base_doc': ('http://baptiste.bauvin.pages.lis-lab.fr/summit/', 'base_doc')}
+extlinks = {'base_source': ('https://gitlab.lis-lab.fr/baptiste.bauvin/summit/-/tree/master/%s', "_"),
+            'base_doc': ('http://baptiste.bauvin.pages.lis-lab.fr/summit/%s', '_')}
 
 
 

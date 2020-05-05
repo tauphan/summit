@@ -38,7 +38,7 @@ def setup_package():
 
     # Une description longue, sera affichée pour présenter la lib
     # Généralement on dump le README ici
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read(),
 
     # Vous pouvez rajouter une liste de dépendances pour votre lib
     # et même préciser une version. A l'installation, Python essayera de
@@ -56,10 +56,9 @@ def setup_package():
     # Une url qui pointe vers la page officielle de votre lib
     url='http://gitlab.lis-lab.fr/baptiste.bauvin/summit/',
     install_requires=requirements,
-    # install_requires=['numpy>=1.16', 'scipy>=0.16','scikit-learn==0.19',
-    #                   'matplotlib', 'h5py', 'joblib',
-    #                   'pandas', 'm2r', 'pyyaml', 'pyscm @ git+https://github.com/aldro61/pyscm',
-    #                   'cvxopt', 'plotly==4.2.1'],
+    extras_require={
+            'dev': ['pytest', 'pytest-cov'],
+            'doc': ['sphinx', 'numpydoc', 'docutils', 'sphinx-autoapi']},
 
     # Il est d'usage de mettre quelques metadata à propos de sa lib
     # Pour que les robots puissent facilement la classer.
@@ -84,11 +83,11 @@ def setup_package():
     # va faire pointer ce nom vers la fonction proclamer(). La commande sera
     # créé automatiquement.
     # La syntaxe est "nom-de-commande-a-creer = package.module:fonction".
-    entry_points={
-        'console_scripts': [
-            'exec_multiview = multiview_platform.execute:exec',
-        ],
-    },
+    # entry_points={
+    #     'console_scripts': [
+    #         'exec_multiview = summit.execute:exec',
+    #     ],
+    # },
 
     # A fournir uniquement si votre licence n'est pas listée dans "classifiers"
     # ce qui est notre cas
@@ -97,7 +96,7 @@ def setup_package():
     # Il y a encore une chiée de paramètres possibles, mais avec ça vous
     # couvrez 90% des besoins
     # ext_modules=cythonize(
-    #     "multiview_platform/mono_multi_view_classifiers/monoview/additions/_custom_criterion.pyx"),
+    #     "summit/multiview_platform/monoview/additions/_custom_criterion.pyx"),
 )
 
 if __name__ == "__main__":

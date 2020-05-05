@@ -6,6 +6,10 @@ tests:
     script:
         - pip3 install -e . --no-deps
         - pytest-3
+    coverage: '/^TOTAL.+?(\d+\%)$/'
+    artifacts:
+        paths:
+            - htmlcov/
 
 # generate the documentation
 doc:
@@ -18,8 +22,8 @@ doc:
     script:
         - export LC_ALL=$(locale -a | grep en_US)
         - export LANG=$(locale -a | grep en_US)
-        - pip3 install -e . --no-deps
-        - sphinx-apidoc -o docs/source multiview_platform
+        - pip3 install -e .[doc]
+        - sphinx-apidoc -o docs/source summit
         - cd docs/source
         - sphinx-build -b html . ../build
         - cd ../..
@@ -27,6 +31,7 @@ doc:
     artifacts:
         paths:
             - public
+            - htmlcov
 
 # project public
 pages:
@@ -38,12 +43,17 @@ pages:
     script:
         - export LC_ALL=$(locale -a | grep en_US)
         - export LANG=$(locale -a | grep en_US)
-        - pip3 install -e . --no-deps
-        - sphinx-apidoc -o docs/source multiview_platform
+        - pip3 install -e .[doc]
+        - pytest-3
+        - sphinx-apidoc -o docs/source summit
         - cd docs/source
         - sphinx-build -b html . ../build
         - cd ../..
         - cp -r ./docs/build public
+        - mkdir public/coverage
+        - mv htmlcov/index.html public/coverage/
+        - mv htmlcov/style.css public/coverage/
     artifacts:
        paths:
             - public
+

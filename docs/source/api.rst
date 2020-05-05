@@ -1,10 +1,12 @@
-Multiview Platform
-==================
+API Documentation
+=================
+
+
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Contents:
+    :maxdepth: 1
 
-   execution
-   monomultidoc
-   analyzeresult
+    api_files/dataset
+
+
+
