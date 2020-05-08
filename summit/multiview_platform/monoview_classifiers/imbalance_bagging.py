@@ -1,8 +1,9 @@
 from imblearn.ensemble import BalancedBaggingClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-from ..monoview.monoview_utils import BaseMonoviewClassifier, CustomRandint, CustomUniform
+from ..monoview.monoview_utils import BaseMonoviewClassifier
 from ..utils.base import base_boosting_estimators
+from ..utils.hyper_parameter_search import CustomRandint, CustomUniform
 
 classifier_class_name = "ImbalanceBagging"
 

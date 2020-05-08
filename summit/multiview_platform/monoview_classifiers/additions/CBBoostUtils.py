@@ -1,6 +1,7 @@
 import logging
 import math
 import time
+import os
 
 import numpy as np
 import numpy.ma as ma
@@ -417,18 +418,19 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
         return sols[np.argmin(values)]
 
     def get_step_decision_test_graph(self, directory, y_test):
-        np.savetxt(directory + "y_test_step.csv", self.step_decisions,
+        np.savetxt(os.path.join(directory, "y_test_step.csv"), self.step_decisions,
                    delimiter=',')
         step_metrics = []
+        print(y_test.shape)
         for step_index in range(self.step_decisions.shape[1] - 1):
             step_metrics.append(self.plotted_metric.score(y_test,
                                                           self.step_decisions[:,
                                                           step_index]))
         step_metrics = np.array(step_metrics)
-        np.savetxt(directory + "step_test_metrics.csv", step_metrics,
+        np.savetxt(os.path.join(directory, "step_test_metrics.csv"), step_metrics,
                    delimiter=',')
         get_accuracy_graph(step_metrics, self.__class__.__name__,
-                           directory + 'step_test_metrics.png',
+                           os.path.join(directory, 'step_test_metrics.png'),
                            self.plotted_metric, set="test")
 
         if self.mincq_tracking:
@@ -452,10 +454,10 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
             den = np.sum((self.step_prod[:, step_index]) ** 2)
             step_cbounds.append(1 - num / (den * self.step_prod.shape[0]))
         step_cbounds = np.array(step_cbounds)
-        np.savetxt(directory + "step_test_c_bounds.csv", step_cbounds,
+        np.savetxt(os.path.join(directory , "step_test_c_bounds.csv"), step_cbounds,
                    delimiter=',')
         get_accuracy_graph(step_cbounds, self.__class__.__name__,
-                           directory + 'step_test_c_bounds.png',
+                           os.path.join(directory, 'step_test_c_bounds.png'),
                            "C_bound", set="test")
 
     def getInterpretCBBoost(self, directory, y_test=None):
@@ -466,57 +468,61 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
         # get_accuracy_graph(self.voter_perfs[:20], self.__class__.__name__,
         #                    directory + 'voter_perfs.png', "Rs")
         get_accuracy_graph(self.weights_, self.__class__.__name__,
-                           directory + 'vote_weights.png', "weights",
+                           os.path.join(directory, 'vote_weights.png'), "weights",
                            zero_to_one=False)
         get_accuracy_graph(self.c_bounds, self.__class__.__name__,
-                           directory + 'c_bounds.png', "C-Bounds")
+                           os.path.join(directory, 'c_bounds.png'), "C-Bounds")
         if self.mincq_tracking:
             get_accuracy_graph(self.c_bounds, self.__class__.__name__,
-                               directory + 'c_bounds_comparaison.png',
+                               os.path.join(directory, 'c_bounds_comparaison.png'),
                                "1-var mins", self.mincq_c_bounds, "MinCQ min",
                                zero_to_one=False)
             get_accuracy_graph(self.train_metrics, self.__class__.__name__,
-                               directory + 'train_metrics_comparaison.png',
+                               os.path.join(directory, 'train_metrics_comparaison.png'),
                                self.plotted_metric,
                                self.mincq_train_metrics, "MinCQ metrics")
         get_accuracy_graph(self.previous_margins, self.__class__.__name__,
-                           directory + 'margins.png', "Margins",
+                           os.path.join(directory ,'margins.png'), "Margins",
                            zero_to_one=False)
         get_accuracy_graph(self.selected_margins, self.__class__.__name__,
-                           directory + 'selected_margins.png',
+                           os.path.join(directory, 'selected_margins.png'),
                            "Selected Margins")
         self.tau[0] = 0
         get_accuracy_graph(self.tau, self.__class__.__name__,
-                           directory + 'disagreements.png', "disagreements",
+                           os.path.join(directory, 'disagreements.png'), "disagreements",
                            zero_to_one=False)
         get_accuracy_graph(self.train_metrics[:-1], self.__class__.__name__,
-                           directory + 'c_bounds_train_metrics.png',
+                           os.path.join(directory, 'c_bounds_train_metrics.png'),
                            self.plotted_metric, self.c_bounds, "C-Bound",
                            self.bounds[:-1])
         get_accuracy_graph(self.norm, self.__class__.__name__,
-                           directory + 'norms.png',
+                           os.path.join(directory, 'norms.png'),
                            "squared 2-norm", zero_to_one=False)
+        np.savetxt(os.path.join(directory, "c_bounds.csv"), self.c_bounds,
+                   delimiter=',')
+        np.savetxt(os.path.join(directory, "train_metrics.csv"), self.train_metrics,
+                   delimiter=',')
         interpretString = getInterpretBase(self, directory,
                                            self.__class__.__name__,
                                            self.weights_, self.break_cause)
         if self.save_train_data:
-            np.savetxt(directory + "x_train.csv", self.X_train, delimiter=',')
-            np.savetxt(directory + "y_train.csv", self.y_train, delimiter=',')
-            np.savetxt(directory + "raw_weights.csv", self.raw_weights,
+            np.savetxt(os.path.join(directory, "x_train.csv"), self.X_train, delimiter=',')
+            np.savetxt(os.path.join(directory , "y_train.csv"), self.y_train, delimiter=',')
+            np.savetxt(os.path.join(directory, "raw_weights.csv"), self.raw_weights,
                        delimiter=',')
-            np.savetxt(directory + "c_bounds.csv", self.c_bounds, delimiter=',')
-            np.savetxt(directory + "train_metrics.csv", self.train_metrics,
+            np.savetxt(os.path.join(directory, "c_bounds.csv"), self.c_bounds, delimiter=',')
+            np.savetxt(os.path.join(directory,"train_metrics.csv"), self.train_metrics,
                        delimiter=',')
-            np.savetxt(directory + "margins.csv", self.previous_margins,
+            np.savetxt(os.path.join(directory, "margins.csv"), self.previous_margins,
                        delimiter=',')
-            np.savetxt(directory + "disagreements.csv", self.tau,
+            np.savetxt(os.path.join(directory, "disagreements.csv"), self.tau,
                        delimiter=',')
-            np.savetxt(directory + "disagreements.csv", self.norm,
+            np.savetxt(os.path.join(directory, "disagreements.csv"), self.norm,
                        delimiter=',')
             if self.mincq_tracking:
-                np.savetxt(directory + "mincq_cbounds.csv", self.mincq_c_bounds,
+                np.savetxt(os.path.join(directory, "mincq_cbounds.csv"), self.mincq_c_bounds,
                            delimiter=',')
-                np.savetxt(directory + "mincq_train_metrics.csv",
+                np.savetxt(os.path.join(directory , "mincq_train_metrics.csv"),
                            self.mincq_train_metrics,
                            delimiter=',')
         args_dict = dict(

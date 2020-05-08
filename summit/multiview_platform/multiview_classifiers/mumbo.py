@@ -6,7 +6,7 @@ from multimodal.boosting.mumbo import MumboClassifier
 
 from ..multiview.multiview_utils import BaseMultiviewClassifier
 from ..utils.hyper_parameter_search import CustomRandint
-from ..utils.dataset import get_examples_views_indices
+from ..utils.dataset import get_samples_views_indices
 from ..utils.base import base_boosting_estimators
 from ..utils.organization import secure_file_path
 from .. import monoview_classifiers
@@ -46,13 +46,13 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
 
 
     def fit(self, X, y, train_indices=None, view_indices=None):
-        train_indices, view_indices = get_examples_views_indices(X,
+        train_indices, view_indices = get_samples_views_indices(X,
                                                                  train_indices,
                                                                  view_indices)
         self.used_views = view_indices
         self.view_names = [X.get_view_name(view_index)
                            for view_index in view_indices]
-        numpy_X, view_limits = X.to_numpy_array(example_indices=train_indices,
+        numpy_X, view_limits = X.to_numpy_array(sample_indices=train_indices,
                                                 view_indices=view_indices)
         self.view_shapes = [view_limits[ind+1]-view_limits[ind]
                             for ind in range(len(self.used_views)) ]
@@ -60,12 +60,12 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
         return MumboClassifier.fit(self, numpy_X, y[train_indices],
                                                 view_limits)
 
-    def predict(self, X, example_indices=None, view_indices=None):
-        example_indices, view_indices = get_examples_views_indices(X,
-                                                                 example_indices,
+    def predict(self, X, sample_indices=None, view_indices=None):
+        sample_indices, view_indices = get_samples_views_indices(X,
+                                                                 sample_indices,
                                                                  view_indices)
         self._check_views(view_indices)
-        numpy_X, view_limits = X.to_numpy_array(example_indices=example_indices,
+        numpy_X, view_limits = X.to_numpy_array(sample_indices=sample_indices,
                                                 view_indices=view_indices)
         return MumboClassifier.predict(self, numpy_X)
 

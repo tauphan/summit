@@ -2,8 +2,8 @@ import numpy as np
 
 from .additions.BoostUtils import getInterpretBase
 from .additions.CQBoostUtils import ColumnGenerationClassifier
-from ..monoview.monoview_utils import CustomUniform, CustomRandint, \
-    BaseMonoviewClassifier
+from ..monoview.monoview_utils import BaseMonoviewClassifier
+from ..utils.hyper_parameter_search import CustomRandint, CustomUniform
 
 classifier_class_name = "CQBoost"
 

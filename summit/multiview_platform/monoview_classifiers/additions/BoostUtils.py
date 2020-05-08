@@ -1,5 +1,6 @@
 import datetime
 import sys
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -928,19 +929,19 @@ def getInterpretBase(classifier, directory, classifier_name, weights,
         classifier.classification_matrix[:, classifier.chosen_columns_],
         precision=4,
         separator=',', suppress_small=True)
-    np.savetxt(directory + "voters.csv",
+    np.savetxt(os.path.join(directory, "voters.csv"),
                classifier.classification_matrix[:, classifier.chosen_columns_],
                delimiter=',')
-    np.savetxt(directory + "weights.csv", classifier.weights_, delimiter=',')
-    np.savetxt(directory + "times.csv",
+    np.savetxt(os.path.join(directory, "weights.csv"), classifier.weights_, delimiter=',')
+    np.savetxt(os.path.join(directory, "times.csv"),
                np.array([classifier.train_time, classifier.predict_time]),
                delimiter=',')
-    np.savetxt(directory + "times_iter.csv",
+    np.savetxt(os.path.join(directory, "times_iter.csv"),
                np.array([classifier.train_time, len(weights_sort)]),
                delimiter=',')
-    np.savetxt(directory + "sparsity.csv", np.array([len(weights_sort)]),
+    np.savetxt(os.path.join(directory + "sparsity.csv"), np.array([len(weights_sort)]),
                delimiter=',')
     get_accuracy_graph(classifier.train_metrics, classifier_name,
-                       directory + 'metrics.png', classifier.plotted_metric,
+                       os.path.join(directory, 'metrics.png'), classifier.plotted_metric,
                        classifier.bounds, "Boosting bound")
     return interpretString

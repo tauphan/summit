@@ -81,7 +81,7 @@ def analyze_iterations(results, benchmark_argument_dictionaries, stats_iter,
                                                                  result,
                                                                  labels_names)
         sample_errors = get_sample_errors(labels, result)
-        feature_importances = get_feature_importances(result)
+        # feature_importances = get_feature_importances(result)
         durations = get_duration(result)
         directory = arguments["directory"]
 
@@ -94,14 +94,14 @@ def analyze_iterations(results, benchmark_argument_dictionaries, stats_iter,
                                      labels_names, class_metric_scores)
         publish_sample_errors(sample_errors, directory, database_name,
                               labels_names, sample_ids, labels)
-        publish_feature_importances(feature_importances, directory,
-                                    database_name)
+        # publish_feature_importances(feature_importances, directory,
+        #                             database_name)
         plot_durations(durations, directory, database_name)
 
         iter_results["metrics_scores"][iter_index] = metrics_scores
         iter_results["class_metrics_scores"][iter_index] = class_metric_scores
         iter_results["sample_errors"][iter_index] = sample_errors
-        iter_results["feature_importances"][iter_index] = feature_importances
+        # iter_results["feature_importances"][iter_index] = feature_importances
         iter_results["labels"] = labels
         iter_results["durations"][iter_index] = durations
 
@@ -125,8 +125,8 @@ def analyze_all(iter_results, stats_iter, directory, data_base_name,
                                          label_names)
     publish_all_sample_errors(error_analysis, directory, stats_iter,
                               sample_ids, labels)
-    publish_feature_importances(feature_importances, directory,
-                                data_base_name, feature_importances_stds)
+    # publish_feature_importances(feature_importances, directory,
+    #                             data_base_name, feature_importances_stds)
     plot_durations(duration_means, directory, data_base_name, duration_stds)
     return results
 
@@ -226,22 +226,22 @@ def format_previous_results(iter_results_lists):
     duration_means = grouped_df.mean()
     duration_stds = grouped_df.std()
 
-    importance_concat_dict = {}
-    for iter_index, view_feature_importances in enumerate(
-            iter_results_lists["feature_importances"]):
-        for view_name, feature_importances in view_feature_importances.items():
-            if view_name not in importance_concat_dict:
-                importance_concat_dict[view_name] = feature_importances
-            else:
-                importance_concat_dict[view_name] = pd.concat(
-                    [importance_concat_dict[view_name], feature_importances])
+    # importance_concat_dict = {}
+    # for iter_index, view_feature_importances in enumerate(
+    #         iter_results_lists["feature_importances"]):
+    #     for view_name, feature_importances in view_feature_importances.items():
+    #         if view_name not in importance_concat_dict:
+    #             importance_concat_dict[view_name] = feature_importances
+    #         else:
+    #             importance_concat_dict[view_name] = pd.concat(
+    #                 [importance_concat_dict[view_name], feature_importances])
 
-    for view_name, dataframe in importance_concat_dict.items():
-        feature_importances_analysis[view_name] = dataframe.groupby(
-            dataframe.index).mean()
-
-        feature_importances_stds[view_name] = dataframe.groupby(
-            dataframe.index).std(ddof=0)
+    # for view_name, dataframe in importance_concat_dict.items():
+    #     feature_importances_analysis[view_name] = dataframe.groupby(
+    #         dataframe.index).mean()
+    #
+    #     feature_importances_stds[view_name] = dataframe.groupby(
+    #         dataframe.index).std(ddof=0)
 
     added_sample_errors = {}
     for sample_errors in iter_results_lists["sample_errors"]:

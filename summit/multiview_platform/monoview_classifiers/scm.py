@@ -1,7 +1,8 @@
 from pyscm.scm import SetCoveringMachineClassifier as scm
 
-from ..monoview.monoview_utils import CustomRandint, CustomUniform, \
-    BaseMonoviewClassifier
+from ..monoview.monoview_utils import BaseMonoviewClassifier
+from ..utils.hyper_parameter_search import CustomRandint, CustomUniform
+
 
 # Author-Info
 __author__ = "Baptiste Bauvin"

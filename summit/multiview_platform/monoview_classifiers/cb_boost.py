@@ -1,5 +1,6 @@
 from .additions.CBBoostUtils import CBBoostClassifier
-from ..monoview.monoview_utils import BaseMonoviewClassifier, CustomRandint
+from ..utils.hyper_parameter_search import CustomRandint
+from ..monoview.monoview_utils import BaseMonoviewClassifier
 
 
 classifier_class_name = "CBBoost"
@@ -30,7 +31,7 @@ class CBBoost(CBBoostClassifier, BaseMonoviewClassifier):
     weird_strings :
 
     """
-    def __init__(self, random_state=None, n_max_iterations=500, n_stumps=1,
+    def __init__(self, random_state=None, n_max_iterations=200, n_stumps=1,
                  **kwargs):
 
         super(CBBoost, self).__init__(n_max_iterations=n_max_iterations,
@@ -60,7 +61,7 @@ class CBBoost(CBBoostClassifier, BaseMonoviewClassifier):
     #     return True
 
 
-    def get_interpretation(self, directory, y_test, multi_class=False):
+    def get_interpretation(self, directory, base_file_name, y_test, multi_class=False):
         """
         return interpretation string
 

@@ -11,4 +11,3 @@ pyyaml>=3.12
 plotly>=4.2.1
 matplotlib>=3.1.1
 tabulate>=0.8.6
--e git+https://gitlab.lis-lab.fr/dominique.benielli/multiviewmetriclearning
