@@ -14,13 +14,13 @@ For all the following tutorials, we will use the same dataset.
 A generated dataset to rule them all
 ------------------------------------
 
-The :base_source:`dataset <multiview_platform/examples/data/doc_summit.hdf5>` that will be used in the examples consists in
+The :base_source:`dataset <multiview_platform/examples/data/doc_summit.hdf5>` that will be used in the samples consists in
 
-+ 500 examples that are either
++ 500 samples that are either
     + mis-described by all the views (labelled ``Mutual_error_*``),
     + well-described by all the views (labelled ``Redundant_*``),
     + well-described by the majority of the views (labelled ``Complementary_*``),
-    + randomly well- or mis-described by the views (labelled ``example_*``).
+    + randomly well- or mis-described by the views (labelled ``sample_*``).
 
 + 8 balanced classes named ``'label_1'``, ..., ``'label_8'``,
 
@@ -77,7 +77,7 @@ The config file that will be used in this example is available :base_source:`her
     - :yaml:`split: 0.25` (:base_source:`l35 <multiview_platform/examples/config_files/config_example_1.yml#L35>`) means that 75% of the dataset will be used to test the different classifiers and 25% to train them,
     - :yaml:`type: ["monoview", "multiview"]` (:base_source:`l43 <multiview_platform/examples/config_files/config_example_1.yml#L43>`) allows for monoview and multiview algorithms to be used in the benchmark,
     - :yaml:`algos_monoview: ["decision_tree"]` (:base_source:`l45 <multiview_platform/examples/config_files/config_example_1.yml#L45>`) runs a Decision tree on each view,
-    - :yaml:`algos_multiview: ["weighted_linear_early_fusion", "weighted_linear_late_fusion"]` (:base_source:`l47 <multiview_platform/examples/config_files/config_example_1.yml#L47>`) runs a late and an early fusion,
+    - :yaml:`algos_multiview: ["weighted_linear_late_fusion"]` (:base_source:`l47 <multiview_platform/examples/config_files/config_example_1.yml#L47>`) runs a late fusion,
     - The metrics configuration (:base_source:`l52-55 <multiview_platform/examples/config_files/config_example_1.yml#L52>`) ::
 
                         metrics:
@@ -128,7 +128,7 @@ The html version is as follows :
 
 This is a bar plot showing the score on the training set (light gray), and testing set (black) for each monoview classifier on each view and or each multiview classifier.
 
-Here, the generated dataset is build to introduce some complementarity amongst the views. As a consequence, the two multiview algorithms, even if they are naive, have a better score than the decision trees.
+Here, the generated dataset is build to introduce some complementarity amongst the views. As a consequence, the multiview algorithm has better performance than the monoview ones, but the difference is not that clear, which means that the hyper-parameters are maybe not optimal.
 
 The ``.csv`` file is a matrix with the score on train stored in the first row and the score on test stored in the second one. Each classifier is presented in a column. It is loadable with pandas.
 
@@ -137,19 +137,19 @@ A similar graph ``*-accuracy_score*-class.html``, reports the error of each clas
 .. raw:: html
     :file: ./images/example_1/accuracy_class.html
 
-Here, for each classifier, 8 bars are plotted, one for each class. It is clear that for the monoview algorithms, in views 2 and 3, the third class is difficult, as showed in the error matrix.
+Here, for each classifier, 8 bars are plotted, one for each class. It is clear that for the monoview algorithms, in view 2, the third class is difficult, as showed in the error matrix. However, the results show some difference with the error matrix. This sould be due to a specific train-test split. We will see alter how to avoid this issue.
 
 
 ``*-error_analysis_2D.png`` and ``*-error_analysis_2D.html``
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-In these files, one can visualize the success or failure of each classifier on each example.
+In these files, one can visualize the success or failure of each classifier on each sample.
 
 Below, ``*-error_analysis_2D.html`` is displayed.
 
-It is the representation of a matrix, where the rows are the examples, and the columns are the classifiers.
+It is the representation of a matrix, where the rows are the samples, and the columns are the classifiers.
 
-The examples labelled as ``Mutual_error_*`` are mis-classified by most of the algorithms, the redundant ones are well-classified, and the complementary ones are mixly classified.
+The samples labelled as ``Mutual_error_*`` are mis-classified by most of the algorithms, the redundant ones are well-classified, and the complementary ones are mixly classified.
 
 .. note::
     It is highly recommended to zoom in the html figure to see each row.
@@ -160,16 +160,16 @@ The examples labelled as ``Mutual_error_*`` are mis-classified by most of the al
 
 
 This figure is the html version of the classifiers errors' visualization. It is interactive, so, by hovering it, the information on
-each classifier and example is printed. The classifiers are ordered as follows:
+each classifier and sample is printed. The classifiers are ordered as follows:
 
 From left to right : all the monoview classifiers on the first view, all the ones on the second one, ..., then at the far right, the multiview classifiers
 
 This html image is also available in ``.png`` format, but is then not interactive, so harder to analyze.
 
-In terms of information, this is useful to detect possible outlier examples in the dataset and failing classifers.
+In terms of information, this is useful to detect possible outlier samples in the dataset and failing classifers.
 
-For example, a mainly black horizontal line for an example means that it has been missclassified by most of the classifiers.
-It could mean that the example is incorrectly labeled in the dataset or is very hard to classify.
+For example, a mainly black horizontal line for an sample means that it has been missclassified by most of the classifiers.
+It could mean that the sample is incorrectly labeled in the dataset or is very hard to classify.
 
 Symmetrically, a mainly-black column means that a classifier spectacularly failed.
 
@@ -178,12 +178,12 @@ The data used to generate this matrix is available in ``*-2D_plot_data.csv``
 ``*-error_analysis_bar.png`` and ``*-error_analysis_bar.html``
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-This file is a different way to visualize the same information as the two previous ones. Indeed, it is a bar plot, with a bar for each example, counting the ratio of classifiers that failed to classify this particular example.
+This file is a different way to visualize the same information as the two previous ones. Indeed, it is a bar plot, with a bar for each sample, counting the ratio of classifiers that failed to classify this particular sample.
 
 .. raw:: html
     :file: ./images/example_1/bar.html
 
-All the spikes are the mutual error examples, the complementary ones are the 0.33 bars and the redundant are the empty spaces.
+All the spikes are the mutual error samples, the complementary ones are the 0.33 bars and the redundant are the empty spaces.
 
 The data used to generate this graph is available in ``*-bar_plot_data.csv``
 

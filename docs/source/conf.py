@@ -21,12 +21,14 @@
 import os
 import sys
 
+repo_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('../../multiview_platform'))
-sys.path.insert(0, os.path.abspath('../..'))
-file_loc = os.path.split(__file__)[0]
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(file_loc), '.')))
-# import multiview_platform
+sys.path.insert(0, os.path.join(repo_path, "summit'"))
+sys.path.insert(0, repo_path)
+
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(file_loc), '.')))
+# import summit
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -53,17 +55,26 @@ extensions = ['sphinx.ext.autodoc',
 #              'sphinx.ext.viewcode',
 #              'sphinx.ext.githubpages',
                'sphinx.ext.napoleon',
-               'm2r',]
+                'autoapi.extension'
+              ]
 
+autoapi_type = 'python'
+autoapi_dirs = [os.path.join(repo_path, "summit", "multiview_platform", "monoview_classifiers", ""),
+                os.path.join(repo_path, "summit", "multiview_platform", "multiview_classifiers", "")]
+autoapi_options = ["members", "show-module-summary", 'undoc-members']
+autoapi_ignore = ["*additions*"]
+autoapi_keep_files = False
+auto_api_add_toctree_entry = False
+autoapi_template_dir = os.path.join(repo_path, "docs", "source", "templates_autoapi")
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ['_templates', 'templates_autoapi']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = {'.rst': 'restructuredtext', '.md': 'markdown'}
+source_suffix = {'.rst': 'restructuredtext', '.md': 'markdown'}
 # source_suffix = '.rst'
-source_suffix = ['.rst', '.md']
+# source_suffix = ['.rst', '.md']
 
 # source_parsers = {
 #  '.md': CommonMarkParser,
@@ -73,7 +84,7 @@ source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
 # General information about the project.
-project = u'MultiviewPlatform'
+project = u'SuMMIT'
 copyright = u'2019, Baptiste BAUVIN'
 author = u'Baptiste BAUVIN'
 
@@ -121,12 +132,12 @@ html_theme = 'classic'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static/"]
+html_static_path = ["_static"]
 
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'MultiviewPlatformdoc'
+htmlhelp_basename = 'SuMMITdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -152,7 +163,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'MultiviewPlatform.tex', u'MultiviewPlatform Documentation',
+    (master_doc, 'SuMMIT.tex', u'SuMMIT Documentation',
      u'Baptiste BAUVIN', 'manual'),
 ]
 
@@ -161,7 +172,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'multiviewplatform', u'MultiviewPlatform Documentation',
+    (master_doc, 'summit', u'SuMMIT Documentation',
      [author], 1)
 ]
 
@@ -171,8 +182,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'MultiviewPlatform', u'MultiviewPlatform Documentation',
-     author, 'MultiviewPlatform', 'One line description of project.',
+    (master_doc, 'SuMMIT', u'SuMMIT Documentation',
+     author, 'SuMMIT', 'One line description of project.',
      'Miscellaneous'),
 ]
 
@@ -188,19 +199,22 @@ rst_prolog = """
 .. role:: python(code)
     :language: python
 
-.. role :: yaml(code)
+.. role:: yaml(code)
     :language: yaml
+    
+.. role:: mod(code)
+    :language: python
     
 .. |platf| replace:: SuMMIT
 
 .. |HP| replace:: hyper-parameter
 
-.. |HPO| replace hyper-parameters optimization
+.. |HPO| replace:: hyper-parameters optimization
 """
 
 
-extlinks = {'base_source': ('https://gitlab.lis-lab.fr/baptiste.bauvin/summit/-/tree/master/', "base_source"),
-            'base_doc': ('http://baptiste.bauvin.pages.lis-lab.fr/summit/', 'base_doc')}
+extlinks = {'base_source': ('https://gitlab.lis-lab.fr/baptiste.bauvin/summit/-/tree/master/%s', "_"),
+            'base_doc': ('http://baptiste.bauvin.pages.lis-lab.fr/summit/%s', '_')}
 
 
 

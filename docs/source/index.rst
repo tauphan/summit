@@ -12,13 +12,22 @@ This documentation consists in a short read me, with instructions to install and
     All the content labelled WIP is Work In Progress
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   readme_link
    tutorials/index
-   references/multiview_platform
+   api
 
-.. examples
+.. toctree::
+   :maxdepth: 2
+
+   autoapi/summit/multiview_platform/monoview_classifiers/index
+   autoapi/summit/multiview_platform/multiview_classifiers/index
+
+
+Read me
+=========
+
+.. include:: readme_link.rst
 
 
 
