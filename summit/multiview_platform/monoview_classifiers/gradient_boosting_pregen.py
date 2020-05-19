@@ -7,8 +7,9 @@ import numpy as np
 
 from .. import metrics
 from .additions.PregenUtils import PregenClassifier
-from ..monoview.monoview_utils import CustomRandint, BaseMonoviewClassifier, \
-    change_label_to_zero, CustomUniform
+from ..monoview.monoview_utils import BaseMonoviewClassifier, change_label_to_zero
+from ..utils.hyper_parameter_search import CustomUniform, CustomRandint
+
 
 # Author-Info
 __author__ = "Baptiste Bauvin"

@@ -21,7 +21,7 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
     def __init__(self, n_max_iterations=100, estimators_generator="Stumps",
                  random_state=42, self_complemented=True, twice_the_same=True,
                  random_start=False, n_stumps=1, c_bound_sol=True,
-                 plotted_metric=metrics.zero_one_loss, save_train_data=False,
+                 plotted_metric=metrics.zero_one_loss, save_train_data=True,
                  test_graph=True, mincq_tracking=False):
         super(CBBoostClassifier, self).__init__()
         r"""

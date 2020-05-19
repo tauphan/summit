@@ -1,4 +1,5 @@
-from ..monoview.monoview_utils import CustomUniform, BaseMonoviewClassifier
+from ..monoview.monoview_utils import BaseMonoviewClassifier
+from ..utils.hyper_parameter_search import CustomRandint, CustomUniform
 
 #### Algorithm code ####
 

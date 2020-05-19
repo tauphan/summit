@@ -2,8 +2,8 @@ import numpy as np
 
 from .additions.BoostUtils import StumpsClassifiersGenerator
 from .additions.MinCQUtils import RegularizedBinaryMinCqClassifier
-from ..monoview.monoview_utils import BaseMonoviewClassifier, CustomUniform
-
+from ..monoview.monoview_utils import BaseMonoviewClassifier
+from ..utils.hyper_parameter_search import CustomRandint, CustomUniform
 
 classifier_class_name = "MinCQGraalpy"
 

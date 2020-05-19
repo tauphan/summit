@@ -15,7 +15,7 @@ from sklearn.utils.validation import check_random_state, check_X_y
 
 from ..multiview.multiview_utils import BaseMultiviewClassifier
 from ..utils.hyper_parameter_search import CustomRandint
-from ..utils.dataset import get_examples_views_indices
+from ..utils.dataset import get_samples_views_indices
 
 __author__ = 'maoss2'
 
@@ -283,7 +283,7 @@ class GroupSCM(BaseMultiviewClassifier):
                                    view_indices):
         """Here, we extract the data from the HDF5 dataset file and store all
         the concatenated views in one variable"""
-        example_indices, self.view_indices = get_examples_views_indices(dataset,
+        example_indices, self.view_indices = get_samples_views_indices(dataset,
                                                                         example_indices,
                                                                         view_indices)
         if self.view_weights is None:
