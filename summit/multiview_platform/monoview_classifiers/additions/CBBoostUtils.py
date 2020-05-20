@@ -93,11 +93,11 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
 
             # Print dynamically the step and the error of the current classifier
             self.it = k
-            print(
-                "Resp. bound : {}/{}".format(
-                    k + 2,
-                    self.n_max_iterations),
-                end="\r")
+            # print(
+            #     "Resp. bound : {}/{}".format(
+            #         k + 2,
+            #         self.n_max_iterations),
+            #     end="\r")
 
             # Find the best (weight, voter) couple.
             self.q, new_voter_index = self._find_new_voter(y_kernel_matrix,
@@ -115,7 +115,9 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
             self.update_info_containers(formatted_y, voter_perf, k)
 
         self.estimators_generator.choose(self.chosen_columns_)
-
+        # print(np.array(self.try_).shape)
+        # np.savetxt("/home/baptiste/Documents/try_.csv", np.array(self.try_))
+        # np.savetxt("/home/baptiste/Documents/try_2.csv", np.array(self.try_2))
         self.nb_opposed_voters = self.check_opposed_voters()
         if self.save_train_data:
             self.X_train = self.classification_matrix[:, self.chosen_columns_]
@@ -256,7 +258,8 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
 
         self.previous_vote = self.new_voter
         self.norm.append(np.linalg.norm(self.previous_vote) ** 2)
-
+        self.try_ = []
+        self.try_2=[]
         self.q = 1
         self.weights_.append(self.q)
 
@@ -344,6 +347,9 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
         previous_sum = np.multiply(y,
                                             self.previous_vote.reshape(m, 1))
         margin_old = np.sum(previous_sum)
+        worst_example = 0
+        # worst_example = np.argmin(previous_sum)
+
 
         bad_margins = np.where(np.sum(y_kernel_matrix, axis=0) <= 0.0)[0]
 
@@ -373,7 +379,9 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
             return "No more pertinent voters", 0
         else:
             best_hyp_index = np.argmin(masked_c_bounds)
-
+            # self.try_.append(np.ravel(previous_sum) )
+            #
+            # self.try_2.append(np.reshape(previous_sum ** 2, (87,)) + (2 * sols[best_hyp_index]*y_kernel_matrix[:, best_hyp_index]*np.reshape(previous_sum, (87, ))))
             self.c_bounds.append(masked_c_bounds[best_hyp_index])
             self.margins.append(math.sqrt(self.A2s[best_hyp_index] / m))
             self.disagreements.append(0.5 * self.B1s[best_hyp_index] / m)

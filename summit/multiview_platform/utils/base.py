@@ -53,7 +53,7 @@ class BaseClassifier(BaseEstimator, ):
         """
         return ", ".join(
             [param_name + " : " + self.to_str(param_name) for param_name in
-             self.param_names])
+             self.param_names if param_name is not None])
 
     def get_config(self):
         """

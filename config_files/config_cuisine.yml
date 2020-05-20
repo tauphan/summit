@@ -1,10 +1,10 @@
 # The base configuration of the benchmark
 log: True
-name: ["lives_14view_EMF"]
+name: ["ionosphere"]
 label: "_"
 file_type: ".hdf5"
 views:
-pathf: "/home/baptiste/Documents/Datasets/Alexis/data/"
+pathf: "/home/baptiste/Documents/Datasets/UCI/both"
 nice: 0
 random_state: 42
 nb_cores: 1
@@ -20,9 +20,9 @@ multiclass_method: "oneVersusOne"
 split: 0.75
 nb_folds: 5
 nb_class: 2
-classes: ["multi_clustered", "EMF"]
-type: ["multiview","monoview"]
-algos_monoview: ["scm_mazid", "decision_tree"]
+classes:
+type: ["monoview"]
+algos_monoview: ["cb_boost",]
 algos_multiview: ["group_scm"]
 stats_iter: 2
 metrics:
