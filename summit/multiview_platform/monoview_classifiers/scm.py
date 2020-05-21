@@ -1,5 +1,7 @@
 from pyscm.scm import SetCoveringMachineClassifier as scm
 
+import numpy as np
+
 from ..monoview.monoview_utils import BaseMonoviewClassifier
 from ..utils.hyper_parameter_search import CustomRandint, CustomUniform
 
@@ -61,6 +63,18 @@ class SCM(scm, BaseMonoviewClassifier):
         self.classed_params = []
         self.weird_strings = {}
 
+    def fit(self, X, y, tiebreaker=None, iteration_callback=None, **fit_params):
+        self.n_features = X.shape[1]
+        scm.fit(self, X, y, tiebreaker=None, iteration_callback=None, **fit_params)
+        self.feature_importances_ = np.zeros(self.n_features)
+        # sum the rules importances :
+        # rules_importances = estim.get_rules_importances() #activate it when pyscm will implement importance
+        rules_importances = np.ones(len(
+            self.model_.rules))  # delete it when pyscm will implement importance
+        for rule, importance in zip(self.model_.rules, rules_importances):
+            self.feature_importances_[rule.feature_idx] += importance
+        self.feature_importances_ /= np.sum(self.feature_importances_)
+
     # def canProbas(self):
     #     """
     #     Used to know if the classifier can return label probabilities
@@ -71,17 +85,11 @@ class SCM(scm, BaseMonoviewClassifier):
     #     """
     #     return False
 
-    def get_interpretation(self, directory, y_test, multi_class=False):
-        interpretString = "Model used : " + str(self.model_)
-        return interpretString
+    def get_interpretation(self, directory, base_file_name, y_test, multi_class=False):
+        interpret_string = self.get_feature_importance(directory, base_file_name)
+        interpret_string += "Model used : " + str(self.model_)
+        return interpret_string
 
-
-# def formatCmdArgs(args):
-#     """Used to format kwargs for the parsed args"""
-#     kwargsDict = {"model_type": args.SCM_model_type,
-#                   "p": args.SCM_p,
-#                   "max_rules": args.SCM_max_rules}
-#     return kwargsDict
 
 
 def paramsToSet(nIter, random_state):

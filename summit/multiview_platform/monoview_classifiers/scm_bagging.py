@@ -170,6 +170,7 @@ class ScmBaggingClassifier(BaseEnsemble, ClassifierMixin, BaseMonoviewClassifier
         self.binary_to_labels = {bin_label: str_label for str_label, bin_label
                                  in self.labels_to_binary.items()}
         y = np.array([self.labels_to_binary[l] for l in y])
+        self.n_features = X.shape[1]
 
         estimators = []
         self.estim_features = []
@@ -296,6 +297,10 @@ class ScmBaggingClassifier(BaseEnsemble, ClassifierMixin, BaseMonoviewClassifier
         print(feature_id_occurences)
         importances = {k: round(v / feature_id_occurences[k], 3) for k, v in
                        importances.items()}
+        self.feature_importances_ = np.array([importances[k]
+                                              if k in importances else 0
+                                              for k in range(self.n_features)])
+        self.feature_importances_ /= np.sum(self.feature_importances_)
         return importances
 
     def get_estimators_indices(self):
@@ -313,3 +318,9 @@ class ScmBaggingClassifier(BaseEnsemble, ClassifierMixin, BaseMonoviewClassifier
 
     def score(self, X, y):
         return accuracy_score(y, self.predict(X))
+
+    def get_interpretation(self, directory, base_file_name, y_test,
+                           multi_class=False):
+        self.features_importance()
+        interpret_string = self.get_feature_importance(directory, base_file_name)
+        return interpret_string

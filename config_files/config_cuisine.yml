@@ -22,7 +22,7 @@ nb_folds: 5
 nb_class: 2
 classes:
 type: ["monoview"]
-algos_monoview: ["scm_bagging",]
+algos_monoview: ["scm_bagging", "scm", "cb_boost", "adaboost"]
 algos_multiview: ["group_scm"]
 stats_iter: 2
 metrics:
@@ -30,5 +30,8 @@ metrics:
   f1_score:
     average: 'binary'
 metric_princ: "f1_score"
-hps_type: "Random"
+hps_type: "None"
 hps_args: {}
+
+cb_boost:
+  n_stumps: 10

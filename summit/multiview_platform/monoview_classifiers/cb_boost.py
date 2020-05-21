@@ -76,7 +76,9 @@ class CBBoost(CBBoostClassifier, BaseMonoviewClassifier):
         -------
 
         """
-        return self.getInterpretCBBoost(directory, y_test)
+        interpret_string = self.getInterpretCBBoost(directory, base_file_name, y_test)
+        interpret_string += self.get_feature_importance(directory, base_file_name)
+        return interpret_string
 
     def get_name_for_fusion(self):
         """

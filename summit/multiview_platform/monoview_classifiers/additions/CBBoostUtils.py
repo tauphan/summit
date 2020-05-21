@@ -57,6 +57,7 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
         self.step_prod = None
         self.n_max_iterations = n_max_iterations
         self.estimators_generator = estimators_generator
+        self.estimators_generator_name = estimators_generator
         self.self_complemented = self_complemented
         self.twice_the_same = twice_the_same
         self.random_start = random_start
@@ -72,6 +73,7 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
         self.mincq_tracking = mincq_tracking
 
     def fit(self, X, y):
+        self.n_features = X.shape[1]
         formatted_X, formatted_y = self.format_X_y(X, y)
 
         self.init_info_containers()
@@ -131,6 +133,11 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
 
         end = time.time()
         self.train_time = end - start
+        self.feature_importances_ = np.zeros(X.shape[1])
+        for iter_index, iteration_feature_imporances in enumerate(self.chosen_features):
+            for feature_index, importance in iteration_feature_imporances:
+                self.feature_importances_[feature_index] += importance*self.weights_[iter_index]
+        self.feature_importances_ /= np.sum(self.feature_importances_)
         return self
 
     def predict(self, X):
@@ -239,6 +246,13 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
     def append_new_voter(self, new_voter_index):
         """Used to append the voter to the majority vote"""
         self.chosen_columns_.append(new_voter_index)
+        if self.estimators_generator_name=="Stumps":
+            self.chosen_features.append([(int(new_voter_index%(self.n_stumps*self.n_features)/self.n_stumps), 1)])
+        elif self.estimators_generator_name == "Trees":
+            self.chosen_features.append([(self.estimators_generator.attribute_indices[new_voter_index][fake_ind], importance)
+                                         for fake_ind, importance
+                                         in enumerate(self.estimators_generator.estimators_[new_voter_index].feature_importances_)
+                                         if importance>0])
         self.new_voter = self.classification_matrix[:, new_voter_index].reshape(
             (self.n_total_examples, 1))
 
@@ -309,6 +323,7 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
     def init_info_containers(self):
         """Initialize the containers that will be collected at each iteration for the analysis"""
         self.weights_ = []
+        self.chosen_features = []
         self.chosen_columns_ = []
         self.fobidden_columns = []
         self.c_bounds = []
@@ -468,7 +483,7 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
                            os.path.join(directory, 'step_test_c_bounds.png'),
                            "C_bound", set="test")
 
-    def getInterpretCBBoost(self, directory, y_test=None):
+    def getInterpretCBBoost(self, directory, base_file_name="", y_test=None):
         self.directory = directory
         """Used to interpret the functionning of the algorithm"""
         if self.step_decisions is not None:
@@ -539,7 +554,7 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
         interpretString += "\n \n With arguments : \n" + u'\u2022 ' + (
                 "\n" + u'\u2022 ').join(['%s: \t%s' % (key, value)
                                          for (key, value) in
-                                         args_dict.items()])
+                                         args_dict.items()])+"\n\n"
         if not self.respected_bound:
             interpretString += "\n\n The bound was not respected"
 
