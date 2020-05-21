@@ -22,6 +22,7 @@ import numbers
 import numpy as np
 from six import iteritems
 from warnings import warn
+import logging
 
 MAX_INT = np.iinfo(np.int32).max
 
@@ -83,9 +84,11 @@ class ScmBaggingClassifier(BaseEnsemble, ClassifierMixin, BaseMonoviewClassifier
                  max_samples=1.0,
                  max_features=1.0,
                  max_rules=10,
-                 p_options=[1.0],
+                 p_options=[0.316],
                  model_type="conjunction",
                  random_state=None):
+        if isinstance(p_options, float):
+            p_options = [p_options]
         self.n_estimators = n_estimators
         self.max_samples = max_samples
         self.max_features = max_features
@@ -95,11 +98,20 @@ class ScmBaggingClassifier(BaseEnsemble, ClassifierMixin, BaseMonoviewClassifier
         self.random_state = random_state
         self.labels_to_binary = {}
         self.binary_to_labels = {}
-        self.param_names = ["n_estimators", "max_rules", "max_samples", "max_features", "model_type", "random_state"]
+        self.param_names = ["n_estimators", "max_rules", "max_samples", "max_features", "model_type", "p_options", "random_state"]
         self.classed_params = []
         self.distribs = [CustomRandint(low=1, high=300), CustomRandint(low=1, high=20),
-                         CustomUniform(), CustomUniform(), ["conjunction", "disjunction"], [random_state]]
+                         CustomUniform(), CustomUniform(), ["conjunction", "disjunction"], CustomUniform(), [random_state]]
         self.weird_strings = {}
+
+    def set_params(self, p_options=[0.316], **kwargs):
+        if not isinstance(p_options, list):
+            p_options = [p_options]
+        kwargs["p_options"] = p_options
+        for parameter, value in iteritems(kwargs):
+            setattr(self, parameter, value)
+        return self
+
 
     def p_for_estimators(self):
         """Return the value of p for each estimator to fit."""
@@ -135,10 +147,10 @@ class ScmBaggingClassifier(BaseEnsemble, ClassifierMixin, BaseMonoviewClassifier
         }
         return hyperparams
 
-    def set_params(self, **parameters):
-        for parameter, value in iteritems(parameters):
-            setattr(self, parameter, value)
-        return self
+    # def set_params(self, **parameters):
+    #     for parameter, value in iteritems(parameters):
+    #         setattr(self, parameter, value)
+    #     return self
 
     def labels_conversion(self, labels_list):
         l = list(set(labels_list))

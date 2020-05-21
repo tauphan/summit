@@ -25,6 +25,7 @@ class ImbalanceBagging(BaseMonoviewClassifier, BalancedBaggingClassifier):
                          base_boosting_estimators,
                          ["auto"]]
         self.weird_strings = {"base_estimator": "class_name"}
+        self.base_estimator_config = base_estimator_config
 
 
 
