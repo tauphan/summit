@@ -1,10 +1,10 @@
 # The base configuration of the benchmark
 log: True
-name: ["ionosphere"]
-label: "_"
+name: ["demo"]
+label: "_1_3"
 file_type: ".hdf5"
 views:
-pathf: "/home/baptiste/Documents/Datasets/UCI/both"
+pathf: "/home/baptiste/Documents/Datasets/Generated/"
 nice: 0
 random_state: 42
 nb_cores: 1
@@ -20,18 +20,20 @@ multiclass_method: "oneVersusOne"
 split: 0.75
 nb_folds: 5
 nb_class: 2
-classes:
-type: ["monoview"]
-algos_monoview: ["scm_bagging", "scm", "cb_boost", "adaboost"]
-algos_multiview: ["group_scm"]
-stats_iter: 2
+classes: ['label_1', 'label_3']
+type: ["multiview", "monoview"]
+algos_monoview: ["cb_boost",]
+algos_multiview: ["multiview_cbound_boosting"]
+stats_iter: 5
 metrics:
   accuracy_score: {}
   f1_score:
     average: 'binary'
-metric_princ: "f1_score"
+metric_princ: "accuracy_score"
 hps_type: "None"
 hps_args: {}
 
 cb_boost:
+  n_stumps: 10
+multiview_cbound_boosting:
   n_stumps: 10
