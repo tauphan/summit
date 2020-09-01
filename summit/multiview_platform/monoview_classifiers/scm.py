@@ -74,6 +74,7 @@ class SCM(scm, BaseMonoviewClassifier):
         for rule, importance in zip(self.model_.rules, rules_importances):
             self.feature_importances_[rule.feature_idx] += importance
         self.feature_importances_ /= np.sum(self.feature_importances_)
+        return self
 
     # def canProbas(self):
     #     """

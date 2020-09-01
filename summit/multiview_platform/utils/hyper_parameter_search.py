@@ -79,6 +79,7 @@ class HPSearch:
                 if cross_validation_score >= max(results.values()):
                     self.best_params_ = self.candidate_params[
                         candidate_param_idx]
+                    self.best_params_ = current_estimator.get_params()
                     self.best_score_ = cross_validation_score
             except BaseException:
                 if self.track_tracebacks:

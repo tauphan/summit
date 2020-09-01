@@ -62,7 +62,7 @@ class RandomForestPregen(RandomForestClassifier, BaseMonoviewClassifier,
         self.base_predictions = np.array(
             [change_label_to_zero(estim.predict(pregen_X)) for estim in
              self.estimators_])
-
+        return self
 
 
     def predict(self, X):

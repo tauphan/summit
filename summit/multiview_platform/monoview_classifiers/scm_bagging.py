@@ -69,7 +69,7 @@ class ScmBagging(ScmBaggingClassifier, BaseMonoviewClassifier):
     """
 
     def __init__(self,
-                 n_estimators=10,
+                 n_estimators=50,
                  max_samples=1.0,
                  max_features=1.0,
                  max_rules=10,

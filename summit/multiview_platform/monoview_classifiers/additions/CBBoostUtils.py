@@ -140,6 +140,18 @@ class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):
         self.feature_importances_ /= np.sum(self.feature_importances_)
         return self
 
+    def predict_proba(self, X):
+        start = time.time()
+        check_is_fitted(self, 'weights_')
+        if scipy.sparse.issparse(X):
+            logging.warning('Converting sparse matrix to dense matrix.')
+            X = np.array(X.todense())
+
+        classification_matrix = self._binary_classification_matrix(X)
+        margins = np.sum(classification_matrix * self.weights_, axis=1)
+        proba = np.array([np.array([(1 - vote)/2, (1 + vote)/2]) for vote in margins])
+        return proba
+
     def predict(self, X):
         start = time.time()
         check_is_fitted(self, 'weights_')

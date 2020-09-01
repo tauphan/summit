@@ -129,6 +129,7 @@ class AdaboostPregen(AdaBoostClassifier, BaseMonoviewClassifier,
             np.sqrt(1 - 4 * np.square(0.5 - self.estimator_errors_[:i + 1])))
                                 for i in
                                 range(self.estimator_errors_.shape[0])])
+        return self
 
     # def canProbas(self):
     #     """

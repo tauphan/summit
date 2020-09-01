@@ -1,10 +1,10 @@
 # The base configuration of the benchmark
 log: True
-name: ["demo"]
+name: ["test_boules"]
 label: "_1_3"
 file_type: ".hdf5"
 views:
-pathf: "/home/baptiste/Documents/Datasets/Generated/"
+pathf: "/home/baptiste/Documents/Clouded/short_projects/latent_space_study/"
 nice: 0
 random_state: 42
 nb_cores: 1
@@ -17,23 +17,74 @@ track_tracebacks: False
 
 # All the classification-realted configuration options
 multiclass_method: "oneVersusOne"
-split: 0.75
+split: 0.10
 nb_folds: 5
-nb_class: 2
-classes: ['label_1', 'label_3']
-type: ["multiview", "monoview"]
-algos_monoview: ["cb_boost",]
-algos_multiview: ["multiview_cbound_boosting"]
+nb_class: 4
+classes:
+type: ["multiview","monoview"]
+algos_monoview: ["cb_boost", "decision_tree", 'random_forest']
+algos_multiview: ["mv_cb_boost", "weighted_linear_late_fusion","weighted_linear_early_fusion","mumbo" ]
 stats_iter: 5
 metrics:
   accuracy_score: {}
   f1_score:
-    average: 'binary'
+    average: 'micro'
 metric_princ: "accuracy_score"
-hps_type: "None"
-hps_args: {}
+hps_type: "Random"
+hps_args:
+  n_iter: 10
+  equivalent_draws: True
 
 cb_boost:
-  n_stumps: 10
-multiview_cbound_boosting:
-  n_stumps: 10
+  n_stumps: 30
+  n_max_iterations: 20
+  estimators_generator: "Trees"
+  max_depth: 1
+decision_tree:
+  max_depth: 2
+mumbo:
+  base_estimator: decision_tree
+  base_estimator__max_depth: 1
+  n_estimators: 80
+
+mv_cb_boost:
+  n_max_iterations: 80
+  n_stumps: 30
+  estimators_generator: "Trees"
+  max_depth: 1
+
+pb_mv_boost:
+  num_iterations: 20
+  decision_tree_depth: 1
+weighted_linear_early_fusion:
+  monoview_classifier_name: "cb_boost"
+  monoview_classifier_config:
+    cb_boost:
+      n_stumps: 30
+      n_max_iterations: 20
+      estimators_generator: "Trees"
+      max_depth: 1
+weighted_linear_late_fusion:
+  classifiers_names: ["cb_boost", "cb_boost", "cb_boost", "cb_boost"]
+  classifier_configs:
+    - cb_boost:
+        n_stumps: 30
+        n_max_iterations: 20
+        estimators_generator: "Trees"
+        max_depth: 1
+    - cb_boost:
+        n_stumps: 30
+        n_max_iterations: 20
+        estimators_generator: "Trees"
+        max_depth: 1
+    - cb_boost:
+        n_stumps: 30
+        n_max_iterations: 20
+        estimators_generator: "Trees"
+        max_depth: 1
+    - cb_boost:
+        n_stumps: 30
+        n_max_iterations: 20
+        estimators_generator: "Trees"
+        max_depth: 1
+

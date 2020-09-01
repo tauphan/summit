@@ -64,6 +64,7 @@ class BaggingPregen(BaggingClassifier, BaseMonoviewClassifier,
         end = time.time()
         self.train_time = end - begin
         self.train_shape = pregen_X.shape
+        return self
 
 
 

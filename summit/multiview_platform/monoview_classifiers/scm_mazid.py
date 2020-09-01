@@ -34,6 +34,7 @@ class DecisionStumpSCMNew(BaseMonoviewClassifier):
         print(self.model_type)
         self.clf = scm(model_type=self.model_type, max_rules=self.max_rules, p=self.p, random_state=self.random_state)
         self.clf.fit(X=X, y=y)
+        return self
 
     def predict(self, X):
         return self.clf.predict(X)
