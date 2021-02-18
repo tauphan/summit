@@ -1,14 +1,14 @@
 # The base configuration of the benchmark
 log: True
-name: ["test_boules"]
-label: "_1_3"
+name: ["ionosphere", "abalone", "australian", "balance", "bupa", "cylinder", "hepatitis", "pima", "yeast", "zoo"]
+label: "comp_1"
 file_type: ".hdf5"
 views:
-pathf: "/home/baptiste/Documents/Clouded/short_projects/latent_space_study/"
+pathf: "/home/baptiste/Documents/Datasets/UCI/both/"
 nice: 0
 random_state: 42
 nb_cores: 1
-full: False
+full: True
 debug: True
 add_noise: False
 noise_std: 0.0
@@ -17,74 +17,125 @@ track_tracebacks: False
 
 # All the classification-realted configuration options
 multiclass_method: "oneVersusOne"
-split: 0.10
+split: 0.50
 nb_folds: 5
-nb_class: 4
+nb_class: 2
 classes:
-type: ["multiview","monoview"]
-algos_monoview: ["cb_boost", "decision_tree", 'random_forest']
-algos_multiview: ["mv_cb_boost", "weighted_linear_late_fusion","weighted_linear_early_fusion","mumbo" ]
+type: ["monoview",]
+algos_monoview: ["cb_boost", "self_opt_cb", "adaboost", "cq_boost", "min_cq", "adaboost_pregen", "self_opt_cb_pseudo", "self_opt_cb_root"]
+algos_multiview: ["mv_cb_boost","early_fusion_dt", "early_fusion_cb", "early_fusion_rf","mumbo", "early_fusion_svm" ]
 stats_iter: 5
 metrics:
   accuracy_score: {}
   f1_score:
     average: 'micro'
 metric_princ: "accuracy_score"
-hps_type: "Random"
+hps_type: "None"
 hps_args:
-  n_iter: 10
+  n_iter: 30
   equivalent_draws: True
 
+svm_rbf:
+  C: 0.7
+
 cb_boost:
-  n_stumps: 30
-  n_max_iterations: 20
-  estimators_generator: "Trees"
-  max_depth: 1
+  n_stumps: 1
+  n_max_iterations: 10
+  estimators_generator: "Stumps"
+
+cq_boost:
+  n_max_iterations: 10
+  n_stumps: 1
+
+min_cq:
+  n_stumps_per_attribute: 1
+
+adaboost:
+  n_estimators: 10
+
+adaboost_pregen:
+  n_estimators: 10
+  n_stumps: 1
+
 decision_tree:
   max_depth: 2
+
 mumbo:
-  base_estimator: decision_tree
-  base_estimator__max_depth: 1
-  n_estimators: 80
+  base_estimator:
+    - svm_rbf:
+        C: 0.001
+    - svm_rbf:
+        C: 0.001
+    - decision_tree:
+        max_depth: 1
+    - decision_tree:
+        max_depth: 1
+  n_estimators: 100
 
 mv_cb_boost:
-  n_max_iterations: 80
-  n_stumps: 30
-  estimators_generator: "Trees"
-  max_depth: 1
+  n_estimators: 100
+  base_estimator: ["Stumps", "Stumps", "Stumps", "Stumps"]
+  base_estimator__n_stumps: [50, 50, 50, 50]
+  base_estimator__check_diff: False
+  base_estimator__C: 0.001
+  base_estimator__kernel: "rbf"
+  base_estimator__max_depth: 2
+  base_estimator__distribution_type: "uniform"
+  base_estimator__low: 0
+  base_estimator__high: 10
+  base_estimator__attributes_ratio: 0.5
+  base_estimator__examples_ratio: 0.55
 
-pb_mv_boost:
-  num_iterations: 20
-  decision_tree_depth: 1
-weighted_linear_early_fusion:
-  monoview_classifier_name: "cb_boost"
+early_fusion_cb:
   monoview_classifier_config:
     cb_boost:
-      n_stumps: 30
-      n_max_iterations: 20
-      estimators_generator: "Trees"
+      n_estimators: 100
+      base_estimator__max_depth: 1
+early_fusion_dt:
+  monoview_classifier_config:
+    decision_tree:
+      max_depth: 2
+early_fusion_rf:
+  monoview_classifier_config:
+    random_forest:
+      n_estimators: 100
       max_depth: 1
-weighted_linear_late_fusion:
-  classifiers_names: ["cb_boost", "cb_boost", "cb_boost", "cb_boost"]
-  classifier_configs:
-    - cb_boost:
-        n_stumps: 30
-        n_max_iterations: 20
-        estimators_generator: "Trees"
-        max_depth: 1
-    - cb_boost:
-        n_stumps: 30
-        n_max_iterations: 20
-        estimators_generator: "Trees"
-        max_depth: 1
-    - cb_boost:
-        n_stumps: 30
-        n_max_iterations: 20
-        estimators_generator: "Trees"
-        max_depth: 1
-    - cb_boost:
-        n_stumps: 30
-        n_max_iterations: 20
-        estimators_generator: "Trees"
-        max_depth: 1
-
+early_fusion_svm:
+  monoview_classifier_config:
+    svm_rbf:
+      C: 0.7
+#pb_mv_boost:
+#  num_iterations: 20
+#  decision_tree_depth: 1
+#weighted_linear_early_fusion:
+#  monoview_classifier_name: "cb_boost"
+#  monoview_classifier_config:
+#    cb_boost:
+#      n_stumps: 30
+#      n_max_iterations: 20
+#      estimators_generator: "Trees"
+#      max_depth: 1
+#weighted_linear_late_fusion:
+#  classifiers_names: ["cb_boost", "cb_boost", "cb_boost", "cb_boost"]
+#  classifier_configs:
+#    - cb_boost:
+#        n_stumps: 30
+#        n_max_iterations: 20
+#        estimators_generator: "Trees"
+#        max_depth: 1
+#    - cb_boost:
+#        n_stumps: 30
+#        n_max_iterations: 20
+#        estimators_generator: "Trees"
+#        max_depth: 1
+#    - cb_boost:
+#        n_stumps: 30
+#        n_max_iterations: 20
+#        estimators_generator: "Trees"
+#        max_depth: 1
+#    - cb_boost:
+#        n_stumps: 30
+#        n_max_iterations: 20
+#        estimators_generator: "Trees"
+#        max_depth: 1
+#

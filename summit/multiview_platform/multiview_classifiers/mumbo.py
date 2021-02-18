@@ -1,4 +1,5 @@
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.base import BaseEstimator
 import numpy as np
 import os
 
@@ -20,7 +21,15 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
                  random_state=None,
                  best_view_mode="edge", **kwargs):
         BaseMultiviewClassifier.__init__(self, random_state)
-        base_estimator = self.set_base_estim_from_dict(base_estimator, **kwargs)
+        if type(base_estimator) is list:
+            if type(base_estimator[0]) is dict:
+                base_estimator = [self.set_base_estim_from_dict(estim, **kwargs) for estim in base_estimator]
+            elif isinstance(base_estimator[0], BaseEstimator):
+                base_estimator = base_estimator
+            else:
+                raise ValueError("base_estimator should ba a list of dict or a sklearn classifier list")
+        else:
+            base_estimator = self.set_base_estim_from_dict(base_estimator, **kwargs)
         MumboClassifier.__init__(self, base_estimator=base_estimator,
                                     n_estimators=n_estimators,
                                     random_state=random_state,
@@ -103,3 +112,7 @@ class Mumbo(BaseMultiviewClassifier, MumboClassifier):
         interpret_string +="\n The boosting process selected views : \n" + ", ".join(map(str, self.best_views_))
         interpret_string+="\n\n With estimator weights : \n"+ "\n".join(map(str,self.estimator_weights_/np.sum(self.estimator_weights_)))
         return interpret_string
+
+    def accepts_multi_class(self, random_state, n_samples=10, dim=2,
+                            n_classes=3, n_views=2):
+        return True

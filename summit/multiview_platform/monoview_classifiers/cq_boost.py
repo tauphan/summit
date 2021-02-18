@@ -39,23 +39,23 @@ class CQBoost(ColumnGenerationClassifier, BaseMonoviewClassifier):
     #     """Used to know if the classifier can return label probabilities"""
     #     return False
 
-    def get_interpretation(self, directory, y_test, multi_class=False):
-        np.savetxt(directory + "train_metrics.csv", self.train_metrics,
-                   delimiter=',')
-        np.savetxt(directory + "c_bounds.csv", self.c_bounds,
-                   delimiter=',')
-        np.savetxt(directory + "y_test_step.csv", self.step_decisions,
-                   delimiter=',')
-        step_metrics = []
-        for step_index in range(self.step_decisions.shape[1] - 1):
-            step_metrics.append(self.plotted_metric.score(y_test,
-                                                          self.step_decisions[:,
-                                                          step_index]))
-        step_metrics = np.array(step_metrics)
-        np.savetxt(directory + "step_test_metrics.csv", step_metrics,
-                   delimiter=',')
-        return getInterpretBase(self, directory, "CQBoost", self.weights_,
-                                y_test)
+    # def get_interpretation(self, directory, y_test, multi_class=False):
+    #     # np.savetxt(directory + "train_metrics.csv", self.train_metrics,
+    #     #            delimiter=',')
+    #     # np.savetxt(directory + "c_bounds.csv", self.c_bounds,
+    #     #            delimiter=',')
+    #     # np.savetxt(directory + "y_test_step.csv", self.step_decisions,
+    #     #            delimiter=',')
+    #     # step_metrics = []
+    #     # for step_index in range(self.step_decisions.shape[1] - 1):
+    #     #     step_metrics.append(self.plotted_metric.score(y_test,
+    #     #                                                   self.step_decisions[:,
+    #     #                                                   step_index]))
+    #     # step_metrics = np.array(step_metrics)
+    #     # np.savetxt(directory + "step_test_metrics.csv", step_metrics,
+    #     #            delimiter=',')
+    #     return getInterpretBase(self, directory, "CQBoost", self.weights_,
+    #                             y_test)
 
 
 # def formatCmdArgs(args):

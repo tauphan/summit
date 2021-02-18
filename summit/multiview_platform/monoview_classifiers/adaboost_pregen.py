@@ -129,6 +129,7 @@ class AdaboostPregen(AdaBoostClassifier, BaseMonoviewClassifier,
             np.sqrt(1 - 4 * np.square(0.5 - self.estimator_errors_[:i + 1])))
                                 for i in
                                 range(self.estimator_errors_.shape[0])])
+        self.feature_importances_ = np.ones(X.shape[1])
         return self
 
     # def canProbas(self):
@@ -172,32 +173,35 @@ class AdaboostPregen(AdaBoostClassifier, BaseMonoviewClassifier,
     #     self.n_stumps_per_attribute = params["n_tumps"]
     #     return self
 
-    def getInterpret(self, directory, y_test):
-        interpretString = ""
-        # interpretString += self.getFeatureImportance(directory)
-        # interpretString += "\n\n Estimator error | Estimator weight\n"
-        # interpretString += "\n".join(
-        #     [str(error) + " | " + str(weight / sum(self.estimator_weights_)) for
-        #      error, weight in
-        #      zip(self.estimator_errors_, self.estimator_weights_)])
-        # step_test_metrics = np.array(
-        #     [self.plotted_metric.score(y_test, step_pred) for step_pred in
-        #      self.step_predictions])
-        # get_accuracy_graph(step_test_metrics, "AdaboostPregen",
-        #                    directory + "test_metrics.png",
-        #                    self.plotted_metric_name, set="test")
-        # # get_accuracy_graph(self.metrics, "AdaboostPregen",
-        # #                    directory + "metrics.png", self.plotted_metric_name,
-        # #                    bounds=list(self.bounds),
-        # #                    bound_name="boosting bound")
-        # np.savetxt(directory + "test_metrics.csv", step_test_metrics,
-        #            delimiter=',')
-        # np.savetxt(directory + "train_metrics.csv", self.metrics, delimiter=',')
-        # np.savetxt(directory + "times.csv",
-        #            np.array([self.train_time, self.pred_time]), delimiter=',')
-        # np.savetxt(directory + "times_iter.csv",
-        #            np.array([self.train_time, len(self.estimator_weights_)]), delimiter=',')
-        return interpretString
+    # def getInterpret(self, directory, y_test):
+    #     # interpretString = ""
+    #     # interpretString += self.getFeatureImportance(directory)
+    #     # interpretString += "\n\n Estimator error | Estimator weight\n"
+    #     # interpretString += "\n".join(
+    #     #     [str(error) + " | " + str(weight / sum(self.estimator_weights_)) for
+    #     #      error, weight in
+    #     #      zip(self.estimator_errors_, self.estimator_weights_)])
+    #     # step_test_metrics = np.array(
+    #     #     [self.plotted_metric.score(y_test, step_pred) for step_pred in
+    #     #      self.step_predictions])
+    #     # get_accuracy_graph(step_test_metrics, "AdaboostPregen",
+    #     #                    directory + "test_metrics.png",
+    #     #                    self.plotted_metric_name, set="test")
+    #     # # get_accuracy_graph(self.metrics, "AdaboostPregen",
+    #     # #                    directory + "metrics.png", self.plotted_metric_name,
+    #     # #                    bounds=list(self.bounds),
+    #     # #                    bound_name="boosting bound")
+    #     # np.savetxt(directory + "test_metrics.csv", step_test_metrics,
+    #     #            delimiter=',')
+    #     # np.savetxt(directory + "train_metrics.csv", self.metrics, delimiter=',')
+    #     # np.savetxt(directory + "times.csv",
+    #     #            np.array([self.train_time, self.pred_time]), delimiter=',')
+    #     # np.savetxt(directory + "times_iter.csv",
+    #     #            np.array([self.train_time, len(self.estimator_weights_)]), delimiter=',')
+    #     return interpretString
+
+    def feature_importances_(self, value):
+        self._feature_importances_ = value
 
 # def formatCmdArgs(args):
 #     """Used to format kwargs for the parsed args"""
@@ -207,10 +211,10 @@ class AdaboostPregen(AdaBoostClassifier, BaseMonoviewClassifier,
 #     return kwargsDict
 
 
-def paramsToSet(nIter, random_state):
-    """Used for weighted linear early fusion to generate random search sets"""
-    paramsSet = []
-    for _ in range(nIter):
-        paramsSet.append({"n_estimators": random_state.randint(1, 500),
-                          "base_estimator": None})
-    return paramsSet
+# def paramsToSet(nIter, random_state):
+#     """Used for weighted linear early fusion to generate random search sets"""
+#     paramsSet = []
+#     for _ in range(nIter):
+#         paramsSet.append({"n_estimators": random_state.randint(1, 500),
+#                           "base_estimator": None})
+#     return paramsSet

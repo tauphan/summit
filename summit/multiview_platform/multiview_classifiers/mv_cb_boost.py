@@ -8,9 +8,9 @@ class MVCBBoost(MultiviewCBoundBoostingAdapt):
                               self_complemented=True,
                               twice_the_same=False,
                               random_start=False,
-                              n_stumps=10,
+                              n_stumps=100,
                               c_bound_sol=True,
-                              base_estimator="Trees",
+                              base_estimator="Stumps",
                               max_depth=1,
                               mincq_tracking=False,
                               weight_add=3,
@@ -21,7 +21,7 @@ class MVCBBoost(MultiviewCBoundBoostingAdapt):
                               min_cq_mu=10e-3,
                               sig_mult=15,
                               sig_offset=5,
-                              use_previous_voters=False, **kwargs):
+                              use_previous_voters=True, **kwargs):
         MultiviewCBoundBoostingAdapt.__init__(self, n_estimators=n_estimators, random_state=random_state,
                  self_complemented=self_complemented, twice_the_same=twice_the_same,
                  random_start=random_start, n_stumps=n_stumps, c_bound_sol=c_bound_sol, max_depth=max_depth,

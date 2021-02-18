@@ -15,6 +15,7 @@ from ...monoview.monoview_utils import change_label_to_minus
 from ... import metrics
 
 
+
 # Used for CBBoost
 
 class CBBoostClassifier(BaseEstimator, ClassifierMixin, BaseBoost):

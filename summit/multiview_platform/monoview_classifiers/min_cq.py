@@ -616,27 +616,27 @@ class MinCQ(MinCqLearner, BaseMonoviewClassifier):
     #     """Used to know if the classifier can return label probabilities"""
     #     return True
 
-    def set_params(self, **params):
-        self.mu = params["mu"]
-        self.random_state = params["random_state"]
-        self.n_stumps_per_attribute = params["n_stumps_per_attribute"]
-        return self
+    # def set_params(self, **params):
+    #     self.mu = params["mu"]
+    #     self.random_state = params["random_state"]
+    #     self.n_stumps_per_attribute = params["n_stumps_per_attribute"]
+    #     return self
 
-    def get_params(self, deep=True):
-        return {"random_state": self.random_state, "mu": self.mu,
-                "n_stumps_per_attribute": self.n_stumps_per_attribute}
+    # def get_params(self, deep=True):
+    #     return {"random_state": self.random_state, "mu": self.mu,
+    #             "n_stumps_per_attribute": self.n_stumps_per_attribute}
+    # #
+    # def getInterpret(self, directory, y_test):
+    #     interpret_string = "Train C_bound value : " + str(self.cbound_train)
+    #     y_rework = np.copy(y_test)
+    #     y_rework[np.where(y_rework == 0)] = -1
+    #     interpret_string += "\n Test c_bound value : " + str(
+    #         self.majority_vote.cbound_value(self.x_test, y_rework))
+    #     np.savetxt(directory+"times.csv", np.array([self.train_time, 0]))
+    #     return interpret_string
 
-    def getInterpret(self, directory, y_test):
-        interpret_string = "Train C_bound value : " + str(self.cbound_train)
-        y_rework = np.copy(y_test)
-        y_rework[np.where(y_rework == 0)] = -1
-        interpret_string += "\n Test c_bound value : " + str(
-            self.majority_vote.cbound_value(self.x_test, y_rework))
-        np.savetxt(directory+"times.csv", np.array([self.train_time, 0]))
-        return interpret_string
-
-    def get_name_for_fusion(self):
-        return "MCQ"
+    # def get_name_for_fusion(self):
+    #     return "MCQ"
 
 #
 # def formatCmdArgs(args):
@@ -646,9 +646,9 @@ class MinCQ(MinCqLearner, BaseMonoviewClassifier):
 #     return kwargsDict
 
 
-def paramsToSet(nIter, randomState):
-    """Used for weighted linear early fusion to generate random search sets"""
-    paramsSet = []
-    for _ in range(nIter):
-        paramsSet.append({})
-    return paramsSet
+# def paramsToSet(nIter, randomState):
+#     """Used for weighted linear early fusion to generate random search sets"""
+#     paramsSet = []
+#     for _ in range(nIter):
+#         paramsSet.append({})
+#     return paramsSet

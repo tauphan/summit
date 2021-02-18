@@ -35,6 +35,7 @@ class BaseMultiviewClassifier(BaseClassifier):
         self.used_views = None
 
     def set_base_estim_from_dict(self, base_estim_dict, **kwargs):
+        print(base_estim_dict)
         if base_estim_dict is None:
             base_estimator = DecisionTreeClassifier()
         elif isinstance(base_estim_dict, str) and kwargs is not None:

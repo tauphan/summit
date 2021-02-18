@@ -32,7 +32,8 @@ class MultiviewCBoundBoostingAdapt(BaseMultiviewClassifier, MultiviewCBoundBoost
                  weight_update=weight_update, use_previous_voters=use_previous_voters,
                                          full_combination=full_combination,
                                          min_cq_pred=min_cq_pred, min_cq_mu=min_cq_mu,
-                                         sig_mult=sig_mult, sig_offset=sig_offset,
+                                         sig_mult=sig_mult, sig_offset=sig_offset, only_zero_one_weights=False,
+                              update_only_chosen=False,
                                          **kwargs)
         BaseMultiviewClassifier.__init__(self, random_state)
         self.param_names = ["n_estimators","random_state"]
